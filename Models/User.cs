@@ -1,4 +1,6 @@
-﻿namespace BiebWebApp.Models
+﻿using BiebWebApp.Models;
+
+namespace BiebWebApp.Models
 {
     public class User
     {
