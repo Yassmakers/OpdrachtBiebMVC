@@ -1,0 +1,8 @@
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.csproj.AssemblyReference.cache
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.AssemblyInfoInputs.cache
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.AssemblyInfo.cs
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.csproj.CoreCompileInputs.cache
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.RazorAssemblyInfo.cache
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.RazorAssemblyInfo.cs
