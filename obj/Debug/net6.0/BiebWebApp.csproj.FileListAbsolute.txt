@@ -91,3 +91,5 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\refint\BiebWe
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.pdb
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.genruntimeconfig.cache
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\ref\BiebWebApp.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.UI.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.MvcApplicationPartsAssemblyInfo.cs

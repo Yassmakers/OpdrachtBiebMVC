@@ -28,15 +28,22 @@ namespace BiebWebApp.Controllers
             _logger = logger;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string searchString, string filter)
         {
-            if (User.Identity.IsAuthenticated)
+            var items = _context.Items.ToList();
+
+            if (!string.IsNullOrEmpty(searchString))
             {
-                var user = await _userManager.GetUserAsync(User);
-                ViewData["Username"] = user.UserName; // Pass the username to the view
+                items = items.Where(item => item.Title.Contains(searchString) ||
+                                            item.Author.Contains(searchString) ||
+                                            item.Location.Contains(searchString)).ToList();
             }
 
-            var items = await _context.Items.ToListAsync(); // Assuming Items is a DbSet in your context
+            if (!string.IsNullOrEmpty(filter))
+            {
+                items = items.Where(item => item.Location == filter || item.ItemType.ToString() == filter).ToList();
+            }
+
             return View(items);
         }
 

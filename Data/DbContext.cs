@@ -46,13 +46,16 @@ namespace BiebWebApp.Data
                 entity.ToTable("Roles");
             });
 
+            // Seed sample items
+            modelBuilder.Entity<Item>().HasData(
+                new Item { Id = 1, Title = "Book 1", Author = "Author 1", ItemType = ItemType.Book, Year = 2020, Location = "Library" },
+                new Item { Id = 2, Title = "Book 2", Author = "Author 2", ItemType = ItemType.Book, Year = 2019, Location = "Library" },
+                new Item { Id = 3, Title = "Magazine 1", Author = "Author 3", ItemType = ItemType.Magazine, Year = 2021, Location = "Library" }
+            );
+
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<User>().ToTable("Users");
         }
-
-
-
-
     }
 }

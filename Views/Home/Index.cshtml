@@ -1,35 +1,150 @@
-﻿@if (User.Identity.IsAuthenticated)
-{
-    <div class="text-center">
-        <h1 class="display-4">Welcome <span id="username">@ViewData["Username"]</span></h1>
-        <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-        <form id="logoutForm" asp-controller="Home" asp-action="Logout" method="post">
-            <button type="submit" class="btn btn-primary">Logout</button>
-        </form>
-    </div>
+﻿@model List<Item>
 
-    @if (TempData["Message"] != null)
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - BiebWebApp</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-DmY81eYEhaI6FYdMUe0Iy1fDHTJvScbLytlx4xk8fOTPHh4+EaU4w+quDk9t4W2J" crossorigin="anonymous">
+    <style>
+        .extra-info {
+            display: none;
+        }
+
+            .extra-info.show {
+                display: table-row;
+            }
+
+        .details {
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    @if (User.Identity.IsAuthenticated)
     {
-        <div class="alert alert-success">
-            @TempData["Message"]
+     
+
+        <div class="text-center">
+            <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
+            <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+        </div>
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["Message"]
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-center">
+            <h1 class="display-4">Welcome, please log in</h1>
+            <p>
+                <a href="@Url.Action("Login", "Home")">Login</a> or
+                <a href="@Url.Action("Register", "Home")">Register</a>
+            </p>
         </div>
     }
-}
-else
-{
-    <div class="text-center">
-        <h1 class="display-4">Welcome, please log in</h1>
-        <p>
-            <a href="@Url.Action("Login", "Home")">Login</a> or
-            <a href="@Url.Action("Register", "Home")">Register</a>
-        </p>
-    </div>
-}
 
-<!-- Add the following JavaScript code at the bottom of the file -->
-<script>
-    var usernameElement = document.getElementById("username");
-    if (usernameElement.textContent === "") {
-        usernameElement.textContent = "please log in";
+    <h2>Items</h2>
+
+    <div class="btn-group mb-3">
+        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+            Filter
+        </button>
+        <div class="dropdown-menu">
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "" })">All</a>
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Location</h6>
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Library" })">Library</a>
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Shelf A" })">Shelf A</a>
+            <!-- Add more options for other locations -->
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">Type</h6>
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Book" })">Book</a>
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Magazine" })">Magazine</a>
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Newspaper" })">Newspaper</a>
+            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "DVD" })">DVD</a>
+            <!-- Add more options for other item types -->
+        </div>
+    </div>
+
+    <form method="get" action="@Url.Action("Index", "Home")">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Search items..." name="searchString" value="@ViewData["searchString"]">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Search</button>
+            </div>
+        </div>
+    </form>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <h3>Search Results</h3>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Type</th>
+                    <th>Year</th>
+                    <th>Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Title</td>
+                        <td>@item.Author</td>
+                        <td>@item.ItemType</td>
+                        <td>@item.Year</td>
+                        <td>@item.Location</td>
+                    </tr>
+                    <tr class="extra-info">
+                        <td colspan="5">
+                            <div class="details">
+                                <p>Extra information about the item</p>
+                                <!-- Add extra information about the item here -->
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     }
-</script>
+    else
+    {
+        <p>No items found.</p>
+    }
+
+    <script>
+        $(document).ready(function () {
+            $('.dropdown-toggle').dropdown();
+        });
+
+        var rows = document.querySelectorAll('.table tr');
+
+        rows.forEach(function (row) {
+            row.addEventListener('click', function () {
+                var nextRow = row.nextElementSibling;
+
+                if (nextRow.classList.contains('extra-info')) {
+                    nextRow.classList.toggle('show');
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
