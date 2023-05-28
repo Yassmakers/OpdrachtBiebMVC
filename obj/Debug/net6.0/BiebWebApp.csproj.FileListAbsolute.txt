@@ -16,6 +16,7 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\BiebWebApp.dl
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\BiebWebApp.pdb
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Azure.Core.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Azure.Identity.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Humanizer.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
@@ -23,6 +24,7 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Bcl
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Data.SqlClient.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Relational.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.SqlServer.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.Caching.Abstractions.dll
@@ -30,6 +32,7 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Ext
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.Configuration.Abstractions.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.Logging.dll
@@ -46,6 +49,8 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Ide
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.IdentityModel.Tokens.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.SqlServer.Server.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Win32.SystemEvents.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Mono.TextTemplating.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.CodeDom.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Configuration.ConfigurationManager.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Drawing.Common.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.IdentityModel.Tokens.Jwt.dll
@@ -53,6 +58,8 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Memory
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Runtime.Caching.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Security.Permissions.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Text.Encodings.Web.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Text.Json.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Windows.Extensions.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.1\Microsoft.Data.SqlClient.dll
@@ -65,6 +72,7 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\unix
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Runtime.Caching.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\win\lib\netstandard2.0\System.Security.Cryptography.ProtectedData.dll
+C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\win\lib\netcoreapp3.0\System.Windows.Extensions.dll
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\staticwebassets\msbuild.BiebWebApp.Microsoft.AspNetCore.StaticWebAssets.props
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\staticwebassets\msbuild.build.BiebWebApp.props
@@ -83,11 +91,3 @@ C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\refint\BiebWe
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.pdb
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\BiebWebApp.genruntimeconfig.cache
 C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\obj\Debug\net6.0\ref\BiebWebApp.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Humanizer.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.EntityFrameworkCore.Design.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Microsoft.Extensions.DependencyModel.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\Mono.TextTemplating.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.CodeDom.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Text.Encodings.Web.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\System.Text.Json.dll
-C:\Users\symon\source\repos\BiebWebApp\BiebWebApp\bin\Debug\net6.0\runtimes\browser\lib\net6.0\System.Text.Encodings.Web.dll
