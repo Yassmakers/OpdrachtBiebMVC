@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BiebWebApp.Controllers
@@ -19,164 +20,155 @@ namespace BiebWebApp.Controllers
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
         private readonly ILogger<HomeController> _logger;
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
 
-        public HomeController(BiebWebAppContext context, UserManager<User> userManager, SignInManager<User> signInManager, ILogger<HomeController> logger)
+        public HomeController(BiebWebAppContext context, UserManager<User> userManager, SignInManager<User> signInManager, ILogger<HomeController> logger, RoleManager<IdentityRole<int>> roleManager)
         {
             _context = context;
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _signInManager = signInManager;
             _logger = logger;
+            _roleManager = roleManager;
         }
 
-        public IActionResult Index(string searchString, string filter)
+        public IActionResult Profile()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _userManager.FindByIdAsync(userId).Result;
+
+            var reservations = _context.Reservations
+                .Include(r => r.User)
+                .Include(r => r.Item)
+                .Where(r => r.UserId == user.Id)
+                .ToList();
+
+            var model = new ProfileViewModel
+            {
+                User = user,
+                Reservations = reservations
+            };
+
+            return View(model);
+        }
+
+        public IActionResult Index(string searchString, string filter, string author, int? year)
         {
             var items = _context.Items.ToList();
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                items = items.Where(item => item.Title.Contains(searchString) ||
-                                            item.Author.Contains(searchString) ||
-                                            item.Location.Contains(searchString)).ToList();
+                items = items.Where(item => item.Title.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                            item.Author.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                            item.Location.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
             }
 
             if (!string.IsNullOrEmpty(filter))
             {
-                items = items.Where(item => item.Location == filter || item.ItemType.ToString() == filter).ToList();
+                ItemType itemType;
+                if (Enum.TryParse(filter, out itemType))
+                {
+                    items = items.Where(item => item.ItemType == itemType).ToList();
+                }
+            }
+
+            if (!string.IsNullOrEmpty(author))
+            {
+                items = items.Where(item => item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+            }
+
+            if (year != null)
+            {
+                items = items.Where(item => item.Year == year).ToList();
             }
 
             return View(items);
         }
 
-        [HttpGet]
-        public IActionResult Login()
+
+        [Authorize]
+        public IActionResult Reserve(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var item = _context.Items.FirstOrDefault(i => i.Id == id);
+
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _userManager.FindByIdAsync(userId).Result;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = new Reservation
+            {
+                ItemId = item.Id,
+                UserId = user.Id,
+                ReservationDate = DateTime.Now
+            };
+
+            _context.Reservations.Add(reservation);
+            _context.SaveChanges();
+
+            TempData["Message"] = "Reservation created successfully.";
+
+            return RedirectToAction(nameof(Profile));
         }
 
-        public IActionResult Register()
+
+        [Authorize]
+        public IActionResult Details(int? id)
         {
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = _context.Reservations
+                .Include(r => r.User)
+                .Include(r => r.Item)
+                .FirstOrDefault(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            return View(reservation);
         }
 
+
+        [Authorize]
         [HttpPost]
-        public async Task<IActionResult> Register(RegisterModel model)
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int? id)
         {
-            if (ModelState.IsValid)
+            if (id == null)
             {
-                User user = new User { UserName = model.Email, Name = model.Name, Email = model.Email, Type = model.Type };
-                IdentityResult result;
-
-                try
-                {
-                    result = await _userManager.CreateAsync(user, model.Password);
-                    if (result == null)
-                    {
-                        _logger.LogError("User creation result is null.");
-                        ModelState.AddModelError("", "User creation failed.");
-                        return View(model);
-                    }
-                }
-                catch (DbUpdateException ex)
-                {
-                    _logger.LogError(ex, $"An error occurred while creating the user. Failed entities: {string.Join(", ", ex.Entries.Select(e => e.Entity.GetType().Name))}");
-
-                    if (ex.InnerException != null)
-                    {
-                        _logger.LogError(ex.InnerException, $"Inner exception details:");
-                    }
-
-                    ModelState.AddModelError("", "An error occurred while creating the user.");
-                    return View(model);
-                }
-
-                if (result.Succeeded)
-                {
-                    TempData["Message"] = "User created successfully.";
-                    // Set the role name based on the user type
-                    string roleName;
-                    switch (user.Type)
-                    {
-                        case UserType.Member:
-                            roleName = UserType.Member.ToString();
-                            break;
-                        case UserType.Librarian:
-                            roleName = UserType.Librarian.ToString();
-                            break;
-                        case UserType.Administrator:
-                            roleName = UserType.Administrator.ToString();
-                            break;
-                        default:
-                            throw new ArgumentException("Invalid user type");
-                    }
-
-                    var roleResult = await _userManager.AddToRoleAsync(user, roleName);
-                    if (!roleResult.Succeeded)
-                    {
-                        // Handle role assignment failure
-                        _logger.LogError($"Failed to assign role '{roleName}' to user '{user.UserName}'. Errors: {string.Join(", ", roleResult.Errors)}");
-                    }
-
-                    // Sign in the user now
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-
-                    return RedirectToAction("Index", "Home");
-                }
-                else
-                {
-                    foreach (IdentityError error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error.Description);
-                    }
-                    return View(model);
-                }
+                return NotFound();
             }
 
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
+
+            if (reservation == null)
             {
-                ModelState.AddModelError("", error.ErrorMessage);
+                return NotFound();
             }
 
-            return View(model);
-        }
+            _context.Reservations.Remove(reservation);
+            _context.SaveChanges();
 
-        [HttpPost]
-        public async Task<IActionResult> Login(LoginModel model)
-        {
-            if (ModelState.IsValid)
-            {
-                _logger.LogInformation($"Attempting to find user with email {model.Email}.");
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
-                {
-                    _logger.LogInformation($"User {user.UserName} found. Attempting to sign in.");
-                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-                    if (result.Succeeded)
-                    {
-                        _logger.LogInformation($"User {user.UserName} successfully logged in.");
-                        return RedirectToAction("Index", "Home");
-                    }
-                    else
-                    {
-                        _logger.LogWarning($"Failed to log in user {user.UserName}. Sign-in result: {result}");
-                        ModelState.AddModelError("", "Invalid login attempt.");
-                        return View(model);
-                    }
-                }
-                else
-                {
-                    _logger.LogWarning($"Failed to find user with email {model.Email}.");
-                    ModelState.AddModelError("", "Invalid login attempt.");
-                    return View(model);
-                }
-            }
+            TempData["Message"] = "Reservation deleted successfully.";
 
-            return View(model);
-        }
-
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(Profile));
         }
     }
 }

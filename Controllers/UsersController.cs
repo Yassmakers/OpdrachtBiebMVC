@@ -49,19 +49,54 @@ namespace BiebWebApp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type")] User user)
+        public async Task<IActionResult> Create([Bind("Id,Name,Type,Email")] User user, string password)
         {
             if (ModelState.IsValid)
             {
-                var result = await _userManager.CreateAsync(user);
+                user.UserName = user.Name;
+                user.SecurityStamp = Guid.NewGuid().ToString();
+
+                var result = await _userManager.CreateAsync(user, password);
                 if (result.Succeeded)
                 {
+                    // Set the role name based on the user type
+                    string roleName;
+                    switch (user.Type)
+                    {
+                        case UserType.Member:
+                            roleName = UserType.Member.ToString();
+                            break;
+                        case UserType.Librarian:
+                            roleName = UserType.Librarian.ToString();
+                            break;
+                        case UserType.Administrator:
+                            roleName = UserType.Administrator.ToString();
+                            break;
+                        default:
+                            throw new ArgumentException("Invalid user type");
+                    }
+
+                    // Check if the role exists, if not, create it
+                    if (!await _roleManager.RoleExistsAsync(roleName))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
+                    }
+
+                    // Add the user to the role
+                    await _userManager.AddToRoleAsync(user, roleName);
+
                     return RedirectToAction(nameof(Index));
                 }
-                AddErrors(result);
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
+
             return View(user);
         }
+
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -88,7 +123,19 @@ namespace BiebWebApp.Controllers
             {
                 try
                 {
-                    await _userManager.UpdateAsync(user);
+                    var existingUser = await FindUserById(id);
+                    if (existingUser == null)
+                    {
+                        return NotFound();
+                    }
+
+                    existingUser.Name = user.Name;
+                    existingUser.Type = user.Type;
+
+                    await _userManager.UpdateAsync(existingUser); // Update the user
+
+                    // Redirect to the details page instead of the index page
+                    return RedirectToAction(nameof(Details), new { id = existingUser.Id });
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -101,10 +148,11 @@ namespace BiebWebApp.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(user);
         }
+
 
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int id)

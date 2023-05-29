@@ -30,8 +30,6 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-     
-
         <div class="text-center">
             <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
             <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
@@ -57,11 +55,11 @@
 
     <h2>Items</h2>
 
-    <div class="btn-group mb-3">
-        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown">
+    <div class="dropdown mb-3">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Filter
         </button>
-        <div class="dropdown-menu">
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="filterDropdown">
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "" })">All</a>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Location</h6>
@@ -78,9 +76,23 @@
         </div>
     </div>
 
+    <div class="input-group mb-3" style="margin-bottom: 0;">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Filter by author:</span>
+        </div>
+        <input type="text" class="form-control form-control-sm" placeholder="Author" name="authorFilter" id="authorFilterInput">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Filter by year:</span>
+        </div>
+        <input type="number" class="form-control form-control-sm" placeholder="Year" name="yearFilter" id="yearFilterInput">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button" id="filterBtn">Apply Filters</button>
+        </div>
+    </div>
+
     <form method="get" action="@Url.Action("Index", "Home")">
         <div class="input-group mb-3">
-            <input type="text" class="form-control" placeholder="Search items..." name="searchString" value="@ViewData["searchString"]">
+            <input type="text" class="form-control font-weight-bold" placeholder="Search items..." name="searchString" value="@ViewData["searchString"]">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
             </div>
@@ -110,9 +122,16 @@
                         <td>@item.ItemType</td>
                         <td>@item.Year</td>
                         <td>@item.Location</td>
+                        <td>
+@*                        <!-- Show the "Reserve" button only for authenticated members --> *@ 
+                       @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
+{
+    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Items")?itemId=@item.Id">Reserve</a>
+}
+                    </td>
                     </tr>
                     <tr class="extra-info">
-                        <td colspan="5">
+                        <td colspan="6">
                             <div class="details">
                                 <p>Extra information about the item</p>
                                 <!-- Add extra information about the item here -->
@@ -128,20 +147,52 @@
         <p>No items found.</p>
     }
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
     <script>
         $(document).ready(function () {
             $('.dropdown-toggle').dropdown();
-        });
 
-        var rows = document.querySelectorAll('.table tr');
+            $('.dropdown').on('show.bs.dropdown', function (e) {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideDown();
+            });
 
-        rows.forEach(function (row) {
-            row.addEventListener('click', function () {
-                var nextRow = row.nextElementSibling;
+            $('.dropdown').on('hide.bs.dropdown', function (e) {
+                $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
+            });
 
-                if (nextRow.classList.contains('extra-info')) {
-                    nextRow.classList.toggle('show');
+            var rows = document.querySelectorAll('.table tr');
+
+            rows.forEach(function (row) {
+                row.addEventListener('click', function () {
+                    var nextRow = row.nextElementSibling;
+
+                    if (nextRow.classList.contains('extra-info')) {
+                        nextRow.classList.toggle('show');
+                    }
+                });
+            });
+
+            // Apply filter button click event
+            $('#filterBtn').click(function () {
+                var authorFilter = $('#authorFilterInput').val().trim();
+                var yearFilter = $('#yearFilterInput').val().trim();
+                var currentUrl = new URL(window.location.href);
+
+                if (authorFilter !== '') {
+                    currentUrl.searchParams.set('author', authorFilter);
+                } else {
+                    currentUrl.searchParams.delete('author');
                 }
+
+                if (yearFilter !== '') {
+                    currentUrl.searchParams.set('year', yearFilter);
+                } else {
+                    currentUrl.searchParams.delete('year');
+                }
+
+                window.location.href = currentUrl.href;
             });
         });
     </script>

@@ -11,5 +11,6 @@ namespace BiebWebApp.Models
     {
         public string Name { get; set; }
         public UserType Type { get; set; } // UserType enum
+        public virtual ICollection<Reservation> Reservations { get; set; }
     }
 }

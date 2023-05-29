@@ -165,6 +165,15 @@ namespace BiebWebApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ItemId = 1,
+                            ReservationDate = new DateTime(2023, 5, 29, 20, 8, 33, 389, DateTimeKind.Local).AddTicks(8311),
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("BiebWebApp.Models.User", b =>
@@ -239,18 +248,19 @@ namespace BiebWebApp.Migrations
                         .HasDatabaseName("UserNameIndex")
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5c45cb3c-f43c-46eb-9324-7fe9842e2705",
+                            ConcurrencyStamp = "1987f8df-6fcf-422f-a93b-f32f95bc25cb",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "John Doe",
+                            PasswordHash = "AQAAAAEAACcQAAAAEPeATRFMPZt1IBXFdy9X6L1CmIYubSJAQdMkP0jkTgz+Y70MtYNqqF1sRIE6gF5paw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             Type = 0,
@@ -260,11 +270,12 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1e27200c-acb9-4354-8de8-e78a4725b13f",
+                            ConcurrencyStamp = "1e30945f-9d88-4936-a33d-632f22fe8e5d",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Jane Smith",
+                            PasswordHash = "AQAAAAEAACcQAAAAECUnD5F+3L6uf5NlSFBDK78qi0AE6MslSLa0nEJvrEGV5Csqq+ZGKBIpImunER6Q+g==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             Type = 2,
@@ -305,19 +316,19 @@ namespace BiebWebApp.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "e552cb41-06d8-447e-a5ed-fc9e72396d69",
+                            ConcurrencyStamp = "ba8293ae-70e3-406b-8a4d-49dd8dc09ca9",
                             Name = "Member"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "4e88cea9-c7fc-4e3b-8445-71f8809a3d63",
+                            ConcurrencyStamp = "3473b366-8ca0-4ba7-b74e-0530daa6fc69",
                             Name = "Administrator"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "87782bc7-7b0b-49a9-b941-7b56b6a40f25",
+                            ConcurrencyStamp = "8a2f7111-844c-4b45-9aae-bc83287d62f2",
                             Name = "Librarian"
                         });
                 });
@@ -464,7 +475,7 @@ namespace BiebWebApp.Migrations
                         .IsRequired();
 
                     b.HasOne("BiebWebApp.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -523,6 +534,11 @@ namespace BiebWebApp.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BiebWebApp.Models.User", b =>
+                {
+                    b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618
         }

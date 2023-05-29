@@ -1,0 +1,32 @@
+﻿@model IEnumerable<BiebWebApp.Models.Reservation>
+
+<h1>Reservations</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>User</th>
+            <th>Item</th>
+            <th>Reservation Date</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.User.Name</td>
+                <td>@item.Item.Title</td>
+                <td>@item.ReservationDate</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
