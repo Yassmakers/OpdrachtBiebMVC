@@ -5,29 +5,44 @@
 <p>Name: @Model.User.Name</p>
 <p>Email: @Model.User.Email</p>
 
-<h4>Reservations</h4>
-@if (Model.Reservations.Any())
+<h4>Reservations and Loans</h4>
+@if (Model.Reservations.Count > 0)
 {
     <table class="table">
         <thead>
             <tr>
                 <th>Item</th>
                 <th>Reservation Date</th>
+                <th>Loan Date</th>
+                <th>Return Date</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.Reservations)
+            @foreach (var reservation in Model.Reservations)
             {
                 <tr>
-                    <td>@item.Item.Title</td>
-                    <td>@item.ReservationDate</td>
+                    <td>@reservation.Item.Title</td>
+                    <td>@reservation.ReservationDate</td>
+
+                    @if (reservation.Loans != null && reservation.Loans.Count > 0)
+                    {
+                        foreach (var loan in reservation.Loans)
+                        {
+                            <td>@loan.LoanDate</td>
+                            <td>@loan.ReturnDate</td>
+                        }
+                    }
+                    else
+                    {
+                        <td>-</td>
+                        <td>-</td>
+                    }
                     <td>
-                        <!-- Add a details button to view more information about the reservation -->
-                        <a asp-controller="Home" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
+                        <a asp-controller="Home" asp-action="Details" asp-route-id="@reservation.Id" class="btn btn-primary">Details</a>
                     </td>
                     <td>
-                        <form method="post" action="@Url.Action("Delete", new { id = item.Id })" onsubmit="return confirm('Are you sure you want to delete this reservation?');">
+                        <form method="post" action="@Url.Action("Delete", new { id = reservation.Id })" onsubmit="return confirm('Are you sure you want to delete this reservation?');">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-danger">Delete</button>
                         </form>

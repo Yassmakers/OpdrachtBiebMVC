@@ -9,5 +9,6 @@ namespace BiebWebApp.Models
         public ItemType ItemType { get; set; } // ItemType is een Enum met waarden als Book, CD, etc.
         public int Year { get; set; }
         public string Location { get; set; }
+        public virtual Loan Loan { get; set; }
     }
 }

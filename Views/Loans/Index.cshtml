@@ -1,0 +1,42 @@
+﻿@model IEnumerable<BiebWebApp.Models.Loan>
+
+<h1>List of Loans</h1>
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Item</th>
+                <th>Loan Date</th>
+                <th>Return Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model)
+            {
+                <tr>
+                    <td>@loan.User.Name</td>
+                    <td>@loan.Item.Title</td>
+                    <td>@loan.LoanDate</td>
+                    <td>@loan.ReturnDate</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@loan.Id">Details</a> |
+                        <a asp-action="Edit" asp-route-id="@loan.Id">Edit</a> |
+                        <a asp-action="Delete" asp-route-id="@loan.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No loans found.</p>
+}
+
+<p>
+    <a asp-action="Create">Create New Loan</a>
+</p>

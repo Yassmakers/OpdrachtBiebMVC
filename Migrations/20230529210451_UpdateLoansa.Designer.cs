@@ -4,6 +4,7 @@ using BiebWebApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BiebWebApp.Migrations
 {
     [DbContext(typeof(BiebWebAppContext))]
-    partial class BiebWebAppContextModelSnapshot : ModelSnapshot
+    [Migration("20230529210451_UpdateLoansa")]
+    partial class UpdateLoansa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -177,7 +180,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 1,
-                            ReservationDate = new DateTime(2023, 5, 30, 0, 37, 8, 830, DateTimeKind.Local).AddTicks(1720),
+                            ReservationDate = new DateTime(2023, 5, 29, 23, 4, 50, 964, DateTimeKind.Local).AddTicks(3483),
                             UserId = 1
                         });
                 });
@@ -261,12 +264,12 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "37b3ecf2-d2e5-43a1-adba-667ce70d703a",
+                            ConcurrencyStamp = "b5acd1b6-21ad-4f1a-ad91-969b769edc84",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "John Doe",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFdAiQYKMedi5g88H6jVX7xEOlrBwnI/cFjtvPMaDJZ+PWovWXVIALATUiWYYzIIHQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGY4XYEj1yKNwfcl+eF01QsnCshOteaGTxUgau5gZvbi51vTxPGobDuaZYtre+/juQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             Type = 0,
@@ -276,12 +279,12 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9e8162ab-c465-4dc6-8b35-2e7abd05d072",
+                            ConcurrencyStamp = "af4db3e4-a000-4ab5-88c3-f5e3647b371d",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Jane Smith",
-                            PasswordHash = "AQAAAAEAACcQAAAAEDK/sqdfVV1KvrVC5EF8Y6WB3+/ir6teYBFInjhc1sibIi++9lAA3fJU4yWRD3EEpQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFbd6FDErXgdnuxl8P5Sq99dfUHIO/nICLJFDRyM89IkYZk8sv+LjIDJ1E5VPbsFbg==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             Type = 2,
@@ -322,19 +325,19 @@ namespace BiebWebApp.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "c3275056-47d8-4d12-a502-078ffd632cb1",
+                            ConcurrencyStamp = "3da847ef-c729-4348-acd3-a7ceea2b19f1",
                             Name = "Member"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "b436bc34-8e9c-4086-95e4-c94311bbab36",
+                            ConcurrencyStamp = "1a74c226-8345-4646-8a58-d6086d13c05e",
                             Name = "Administrator"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "6cc4c619-2a30-448a-a613-f4db2344ea0a",
+                            ConcurrencyStamp = "668d2a44-6a9c-4066-8bba-940b9caf0d65",
                             Name = "Librarian"
                         });
                 });
@@ -464,7 +467,7 @@ namespace BiebWebApp.Migrations
                     b.HasOne("BiebWebApp.Models.Reservation", "Reservation")
                         .WithMany("Loans")
                         .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BiebWebApp.Models.User", "User")

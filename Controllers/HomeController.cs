@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace BiebWebApp.Controllers
             _roleManager = roleManager;
         }
 
+        [HttpGet("profile")]
         public IActionResult Profile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -39,17 +41,21 @@ namespace BiebWebApp.Controllers
             var reservations = _context.Reservations
                 .Include(r => r.User)
                 .Include(r => r.Item)
+                .Include(r => r.Loans) // Include the Loans navigation property
+                .ThenInclude(l => l.Item) // Include the Item associated with the Loan
                 .Where(r => r.UserId == user.Id)
                 .ToList();
 
             var model = new ProfileViewModel
             {
                 User = user,
-                Reservations = reservations
+                Reservations = reservations ?? new List<Reservation>()
             };
 
             return View(model);
         }
+
+
 
         public IActionResult Index(string searchString, string filter, string author, int? year)
         {
@@ -84,7 +90,7 @@ namespace BiebWebApp.Controllers
             return View(items);
         }
 
-
+        [Authorize]
         [Authorize]
         public IActionResult Reserve(int? id)
         {
@@ -110,18 +116,75 @@ namespace BiebWebApp.Controllers
 
             var reservation = new Reservation
             {
-                ItemId = item.Id,
                 UserId = user.Id,
+                ItemId = item.Id,
                 ReservationDate = DateTime.Now
             };
 
             _context.Reservations.Add(reservation);
-            _context.SaveChanges();
+
+            try
+            {
+                _context.SaveChanges(); // Save changes to get the reservation ID
+                _logger.LogInformation($"Reservation with ID {reservation.Id} created successfully.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception occurred while saving reservation: {e}");
+                return View("Error");
+            }
+
+            var loan = new Loan
+            {
+                UserId = user.Id,
+                ItemId = item.Id,
+                ReservationId = reservation.Id, // Assign the reservation ID to the loan
+                LoanDate = DateTime.Now,
+                ReturnDate = DateTime.Now.AddDays(21) // Set the return date to 3 weeks from now
+            };
+
+            _logger.LogInformation($"Trying to create loan: {loan}");
+            _context.Loans.Add(loan);
+
+            try
+            {
+                _context.SaveChanges(); // Save changes to add the loan
+                _logger.LogInformation($"Loan with ID {loan.Id} created successfully.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception occurred while saving loan: {e}");
+                return View("Error");
+            }
 
             TempData["Message"] = "Reservation created successfully.";
 
             return RedirectToAction(nameof(Profile));
         }
+
+
+        [HttpGet("profile/{id}")]
+        public async Task<IActionResult> Profile(int id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Reservations)
+                    .ThenInclude(r => r.Loans)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ProfileViewModel
+            {
+                User = user,
+                Reservations = user.Reservations.ToList()
+            };
+
+            return View(viewModel);
+        }
+
 
 
         [Authorize]
@@ -144,6 +207,136 @@ namespace BiebWebApp.Controllers
 
             return View(reservation);
         }
+
+
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = new User { UserName = model.Email, Name = model.Name, Email = model.Email, Type = model.Type };
+                IdentityResult result;
+
+                try
+                {
+                    result = await _userManager.CreateAsync(user, model.Password);
+                    if (result == null)
+                    {
+                        _logger.LogError("User creation result is null.");
+                        ModelState.AddModelError("", "User creation failed.");
+                        return View(model);
+                    }
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, $"An error occurred while creating the user. Failed entities: {string.Join(", ", ex.Entries.Select(e => e.Entity.GetType().Name))}");
+
+                    if (ex.InnerException != null)
+                    {
+                        _logger.LogError(ex.InnerException, $"Inner exception details:");
+                    }
+
+                    ModelState.AddModelError("", "An error occurred while creating the user.");
+                    return View(model);
+                }
+
+                if (result.Succeeded)
+                {
+                    TempData["Message"] = "User created successfully.";
+
+                    // Check if the role exists, and if not, create it
+                    string roleName = UserType.Member.ToString();
+                    if (!await _roleManager.RoleExistsAsync(roleName))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole<int>(roleName));
+                    }
+
+                    var roleResult = await _userManager.AddToRoleAsync(user, roleName);
+                    if (!roleResult.Succeeded)
+                    {
+                        // Handle role assignment failure
+                        _logger.LogError($"Failed to assign role '{roleName}' to user '{user.UserName}'. Errors: {string.Join(", ", roleResult.Errors)}");
+                    }
+
+                    // Sign in the user now
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    foreach (IdentityError error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+            }
+
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                ModelState.AddModelError("", error.ErrorMessage);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                _logger.LogInformation($"Attempting to find user with email {model.Email}.");
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    _logger.LogInformation($"User {user.UserName} found. Attempting to sign in.");
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+                    if (result.Succeeded)
+                    {
+                        _logger.LogInformation($"User {user.UserName} successfully logged in.");
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        _logger.LogWarning($"Failed to log in user {user.UserName}. Sign-in result: {result}");
+                        ModelState.AddModelError("", "Invalid login attempt.");
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    _logger.LogWarning($"Failed to find user with email {model.Email}.");
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    return View(model);
+                }
+            }
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+
+
+
+
 
 
         [Authorize]

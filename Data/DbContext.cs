@@ -1,10 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
-using BiebWebApp.Models;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
+﻿using BiebWebApp.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace BiebWebApp.Data
 {
@@ -46,6 +44,12 @@ namespace BiebWebApp.Data
                     }
                 );
 
+            modelBuilder.Entity<Loan>()
+        .HasOne(l => l.Reservation)
+        .WithMany(r => r.Loans)
+        .HasForeignKey(l => l.ReservationId)
+        .OnDelete(DeleteBehavior.ClientCascade); // Change DeleteBehavior.Restrict to DeleteBehavior.Cascade
+
             modelBuilder.Entity<Invoice>()
                 .Property(i => i.Amount)
                 .HasColumnType("decimal(18,2)");
@@ -68,16 +72,14 @@ namespace BiebWebApp.Data
             });
 
             modelBuilder.Entity<Reservation>().HasData(
-        new Reservation
-        {
-            Id = 1,
-            UserId = 1, // Assign an existing user ID
-            ItemId = 1, // Assign an existing item ID
-            ReservationDate = DateTime.Now
-        }
-    );
-
-
+                new Reservation
+                {
+                    Id = 1,
+                    UserId = 1, // Assign an existing user ID
+                    ItemId = 1, // Assign an existing item ID
+                    ReservationDate = DateTime.Now
+                }
+            );
 
             modelBuilder.Entity<Item>().HasData(
                 new Item { Id = 1, Title = "Book 1", Author = "Author 1", ItemType = ItemType.Book, Year = 2020, Location = "Library" },

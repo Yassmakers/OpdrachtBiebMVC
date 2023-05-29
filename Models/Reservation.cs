@@ -10,6 +10,7 @@ namespace BiebWebApp.Models
         public int ItemId { get; set; }
         public virtual Item Item { get; set; }
         public DateTime ReservationDate { get; set; }
+        public virtual ICollection<Loan> Loans { get; set; } // Add the Loans navigation property
     }
 
 
