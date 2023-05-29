@@ -3,6 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using BiebWebApp.Data;
 using BiebWebApp.Models;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+
 
 namespace BiebWebApp.Controllers
 {
@@ -14,6 +19,66 @@ namespace BiebWebApp.Controllers
         {
             _context = context;
         }
+
+        // GET: Items/Reserve/5
+        [Authorize] // Ensure the user is logged in
+        public async Task<IActionResult> Reserve(int? itemId)
+        {
+            if (itemId == null)
+            {
+                return NotFound();
+            }
+
+            var item = await _context.Items.FindAsync(itemId);
+            if (item == null)
+            {
+                return NotFound();
+            }
+
+            // Get the current user's ID
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!int.TryParse(userIdString, out var userId))
+            {
+                // Handle error here: the user ID was not an integer
+                return BadRequest();
+            }
+
+            // Create a new reservation
+            var reservation = new Reservation
+            {
+                ItemId = item.Id,
+                UserId = userId,
+                ReservationDate = DateTime.Now,
+                Item = item // Include the item in the reservation
+            };
+
+            return View(reservation); // Returns a view that asks the user to confirm the reservation
+        }
+
+
+        [Authorize]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
+        public async Task<IActionResult> ReserveConfirmed(Reservation reservation)
+        {
+            // Check if the user has already reserved the item (additional validation)
+            var existingReservation = await _context.Reservations
+                .FirstOrDefaultAsync(r => r.ItemId == reservation.ItemId && r.UserId == reservation.UserId);
+
+            if (existingReservation != null)
+            {
+                TempData["Message"] = "You have already reserved this item."; // Set error message
+                return RedirectToAction("Index", "Home"); // Redirect to the home view index
+            }
+
+            _context.Reservations.Add(reservation);
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Reservation completed successfully."; // Set success message
+
+            return RedirectToAction("Index", "Home"); // Redirect to the home view index
+        }
+
 
         // GET: Items
         public async Task<IActionResult> Index()
