@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BiebWebApp.Migrations
 {
     [DbContext(typeof(BiebWebAppContext))]
-    [Migration("20230529210451_UpdateLoansa")]
-    partial class UpdateLoansa
+    [Migration("20230530234651_AddRoleIdToUserpbuthonestlycandyakla")]
+    partial class AddRoleIdToUserpbuthonestlycandyakla
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,9 @@ namespace BiebWebApp.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -88,19 +91,11 @@ namespace BiebWebApp.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            Author = "Author 1",
-                            ItemType = 0,
-                            Location = "Library",
-                            Title = "Book 1",
-                            Year = 2020
-                        },
-                        new
-                        {
                             Id = 2,
                             Author = "Author 2",
                             ItemType = 0,
                             Location = "Library",
+                            Status = 0,
                             Title = "Book 2",
                             Year = 2019
                         },
@@ -110,6 +105,7 @@ namespace BiebWebApp.Migrations
                             Author = "Author 3",
                             ItemType = 1,
                             Location = "Library",
+                            Status = 0,
                             Title = "Magazine 1",
                             Year = 2021
                         });
@@ -140,8 +136,7 @@ namespace BiebWebApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ItemId")
-                        .IsUnique();
+                    b.HasIndex("ItemId");
 
                     b.HasIndex("ReservationId");
 
@@ -174,15 +169,6 @@ namespace BiebWebApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ItemId = 1,
-                            ReservationDate = new DateTime(2023, 5, 29, 23, 4, 50, 964, DateTimeKind.Local).AddTicks(3483),
-                            UserId = 1
-                        });
                 });
 
             modelBuilder.Entity("BiebWebApp.Models.User", b =>
@@ -264,12 +250,12 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b5acd1b6-21ad-4f1a-ad91-969b769edc84",
+                            ConcurrencyStamp = "ab765bf7-3194-4bb0-84ab-3b86d93dcb17",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "John Doe",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGY4XYEj1yKNwfcl+eF01QsnCshOteaGTxUgau5gZvbi51vTxPGobDuaZYtre+/juQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFOTmo8OaESkxqRopnsntX8bNl8+31OGPX3JrWFgxgLhO74LuF3iaimHZNx94Z3SXw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             Type = 0,
@@ -279,12 +265,12 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "af4db3e4-a000-4ab5-88c3-f5e3647b371d",
+                            ConcurrencyStamp = "5a9d212d-d7d2-4331-9bb0-7b6a8f1abab6",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             LockoutEnabled = false,
                             Name = "Jane Smith",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFbd6FDErXgdnuxl8P5Sq99dfUHIO/nICLJFDRyM89IkYZk8sv+LjIDJ1E5VPbsFbg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEFrtyZYj05oF7V9hTYOsOEyinMR6vj7UoIflXg/X0//mowwVx6o61jm/EoQdVURLiw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             Type = 2,
@@ -325,19 +311,19 @@ namespace BiebWebApp.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "3da847ef-c729-4348-acd3-a7ceea2b19f1",
+                            ConcurrencyStamp = "de1c0650-20b2-45c1-b013-b2011473650e",
                             Name = "Member"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "1a74c226-8345-4646-8a58-d6086d13c05e",
+                            ConcurrencyStamp = "b37b53ac-8b38-44aa-a318-f90adf25526c",
                             Name = "Administrator"
                         },
                         new
                         {
                             Id = 3,
-                            ConcurrencyStamp = "668d2a44-6a9c-4066-8bba-940b9caf0d65",
+                            ConcurrencyStamp = "220f3d52-14da-443e-a545-e59c3f44d8ef",
                             Name = "Librarian"
                         });
                 });
@@ -459,15 +445,15 @@ namespace BiebWebApp.Migrations
             modelBuilder.Entity("BiebWebApp.Models.Loan", b =>
                 {
                     b.HasOne("BiebWebApp.Models.Item", "Item")
-                        .WithOne("Loan")
-                        .HasForeignKey("BiebWebApp.Models.Loan", "ItemId")
+                        .WithMany("Loans")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BiebWebApp.Models.Reservation", "Reservation")
                         .WithMany("Loans")
                         .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
                     b.HasOne("BiebWebApp.Models.User", "User")
@@ -486,7 +472,7 @@ namespace BiebWebApp.Migrations
             modelBuilder.Entity("BiebWebApp.Models.Reservation", b =>
                 {
                     b.HasOne("BiebWebApp.Models.Item", "Item")
-                        .WithMany()
+                        .WithMany("Reservations")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -555,8 +541,9 @@ namespace BiebWebApp.Migrations
 
             modelBuilder.Entity("BiebWebApp.Models.Item", b =>
                 {
-                    b.Navigation("Loan")
-                        .IsRequired();
+                    b.Navigation("Loans");
+
+                    b.Navigation("Reservations");
                 });
 
             modelBuilder.Entity("BiebWebApp.Models.Reservation", b =>

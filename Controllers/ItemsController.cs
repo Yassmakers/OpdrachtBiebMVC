@@ -113,15 +113,15 @@ namespace BiebWebApp.Controllers
         // POST: Items/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Author,ItemType,Year,Location")] Item item)
+        public async Task<IActionResult> Create([Bind("Id,Title,Author,ItemType,Year,Location,Status")] Item model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(item);
+                _context.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(item);
+            return View(model);
         }
 
         // GET: Items/Edit/5
@@ -143,9 +143,9 @@ namespace BiebWebApp.Controllers
         // POST: Items/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,ItemType,Year,Location")] Item item)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,ItemType,Year,Location,Status")] Item model)
         {
-            if (id != item.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
@@ -154,12 +154,12 @@ namespace BiebWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(item);
+                    _context.Update(model);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ItemExists(item.Id))
+                    if (!ItemExists(model.Id))
                     {
                         return NotFound();
                     }
@@ -170,7 +170,7 @@ namespace BiebWebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(item);
+            return View(model);
         }
 
         // GET: Items/Delete/5

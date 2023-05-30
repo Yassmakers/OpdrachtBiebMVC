@@ -25,6 +25,7 @@
                     <td>@reservation.Item.Title</td>
                     <td>@reservation.ReservationDate</td>
 
+
                     @if (reservation.Loans != null && reservation.Loans.Count > 0)
                     {
                         foreach (var loan in reservation.Loans)
@@ -42,10 +43,6 @@
                         <a asp-controller="Home" asp-action="Details" asp-route-id="@reservation.Id" class="btn btn-primary">Details</a>
                     </td>
                     <td>
-                        <form method="post" action="@Url.Action("Delete", new { id = reservation.Id })" onsubmit="return confirm('Are you sure you want to delete this reservation?');">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-danger">Delete</button>
-                        </form>
                     </td>
                 </tr>
             }

@@ -59,13 +59,14 @@ namespace BiebWebApp.Controllers
 
         public IActionResult Index(string searchString, string filter, string author, int? year)
         {
-            var items = _context.Items.ToList();
+            IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                items = items.Where(item => item.Title.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                            item.Author.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                            item.Location.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                itemsQuery = itemsQuery.Where(item =>
+                    item.Title.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    item.Author.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    item.Location.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
             if (!string.IsNullOrEmpty(filter))
@@ -73,24 +74,53 @@ namespace BiebWebApp.Controllers
                 ItemType itemType;
                 if (Enum.TryParse(filter, out itemType))
                 {
-                    items = items.Where(item => item.ItemType == itemType).ToList();
+                    itemsQuery = itemsQuery.Where(item => item.ItemType == itemType);
                 }
             }
 
             if (!string.IsNullOrEmpty(author))
             {
-                items = items.Where(item => item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
+                itemsQuery = itemsQuery.Where(item =>
+                    item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
-            if (year != null)
+            if (year.HasValue)
             {
-                items = items.Where(item => item.Year == year).ToList();
+                itemsQuery = itemsQuery.Where(item => item.Year == year);
+            }
+
+            var items = itemsQuery.ToList();
+
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = _userManager.FindByIdAsync(userId).Result;
+
+                if (user != null)
+                {
+                    var userReservations = _context.Reservations
+                        .Include(r => r.Loans)
+                        .Where(r => r.UserId == user.Id)
+                        .ToList();
+
+                    foreach (var item in items)
+                    {
+                        var reservation = userReservations.FirstOrDefault(r => r.ItemId == item.Id);
+
+                        if (reservation != null)
+                        {
+                            item.Reservations = new List<Reservation> { reservation };
+                        }
+                    }
+                }
             }
 
             return View(items);
         }
 
-        [Authorize]
+
+
+
         [Authorize]
         public IActionResult Reserve(int? id)
         {
@@ -114,12 +144,31 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
+            // Check if the user has already reserved the item
+            var existingReservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id && r.UserId == user.Id);
+            if (existingReservation != null)
+            {
+                TempData["Message"] = "You have already reserved this item.";
+                return RedirectToAction(nameof(Profile));
+            }
+
+            // Check if the item is already reserved
+            var reservedItem = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
+            if (reservedItem != null)
+            {
+                TempData["Message"] = "This item is already reserved.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var reservation = new Reservation
             {
                 UserId = user.Id,
                 ItemId = item.Id,
                 ReservationDate = DateTime.Now
             };
+
+            // Update the status of the item to 'Reserved'
+            item.Status = ItemStatus.Reserved;
 
             _context.Reservations.Add(reservation);
 
@@ -134,30 +183,33 @@ namespace BiebWebApp.Controllers
                 return View("Error");
             }
 
-            var loan = new Loan
-            {
-                UserId = user.Id,
-                ItemId = item.Id,
-                ReservationId = reservation.Id, // Assign the reservation ID to the loan
-                LoanDate = DateTime.Now,
-                ReturnDate = DateTime.Now.AddDays(21) // Set the return date to 3 weeks from now
-            };
-
-            _logger.LogInformation($"Trying to create loan: {loan}");
-            _context.Loans.Add(loan);
-
-            try
-            {
-                _context.SaveChanges(); // Save changes to add the loan
-                _logger.LogInformation($"Loan with ID {loan.Id} created successfully.");
-            }
-            catch (Exception e)
-            {
-                _logger.LogError($"Exception occurred while saving loan: {e}");
-                return View("Error");
-            }
-
             TempData["Message"] = "Reservation created successfully.";
+
+            return RedirectToAction(nameof(Profile));
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteReservation(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            _context.Reservations.Remove(reservation);
+            _context.SaveChanges();
+
+            TempData["Message"] = "Reservation deleted successfully.";
 
             return RedirectToAction(nameof(Profile));
         }
@@ -184,7 +236,6 @@ namespace BiebWebApp.Controllers
 
             return View(viewModel);
         }
-
 
 
         [Authorize]
@@ -342,13 +393,6 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
-            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
-
-            if (reservation == null)
-            {
-                return NotFound();
-            }
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _userManager.FindByIdAsync(userId).Result;
 
@@ -357,13 +401,31 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
+            var reservation = _context.Reservations
+                .Include(r => r.Item)
+                .FirstOrDefault(r => r.Id == id && r.UserId == user.Id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            var item = reservation.Item;
+
+            // Check if the item is already loaned
+            if (item.Status == ItemStatus.Loaned)
+            {
+                TempData["Message"] = "This item is already loaned.";
+                return RedirectToAction(nameof(Profile));
+            }
+
             var loan = new Loan
             {
                 UserId = user.Id,
-                ItemId = reservation.ItemId,
-                ReservationId = reservation.Id, // Assign the reservation ID to the loan
+                ItemId = item.Id,
+                ReservationId = reservation.Id,
                 LoanDate = DateTime.Now,
-                ReturnDate = DateTime.Now.AddDays(21) // Set the return date to 3 weeks from now
+                ReturnDate = DateTime.Now.AddDays(21)
             };
 
             _logger.LogInformation($"Trying to create loan: {loan}");
@@ -371,7 +433,10 @@ namespace BiebWebApp.Controllers
 
             try
             {
-                _context.SaveChanges(); // Save changes to add the loan
+                // Update the status of the item to 'Loaned'
+                item.Status = ItemStatus.Loaned;
+
+                _context.SaveChanges();
                 _logger.LogInformation($"Loan with ID {loan.Id} created successfully.");
             }
             catch (Exception e)
@@ -384,6 +449,8 @@ namespace BiebWebApp.Controllers
 
             return RedirectToAction(nameof(Profile));
         }
+
+
 
 
 

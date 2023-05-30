@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +20,15 @@ string studentNumber = "S1188088";
 string connectionString = $"Server=(localdb)\\mssqllocaldb;Database=Bibliotheek{studentNumber};Trusted_Connection=True;MultipleActiveResultSets=true";
 
 builder.Services.AddDbContext<BiebWebAppContext>(options =>
+{
     options.UseSqlServer(connectionString,
         sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure();
             sqlOptions.CommandTimeout(30); // Set the timeout value (in seconds) as needed
-        }));
+        });
+    options.EnableSensitiveDataLogging(); // Enable sensitive data logging
+});
 
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {

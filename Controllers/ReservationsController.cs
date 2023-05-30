@@ -174,21 +174,32 @@ namespace BiebWebApp.Controllers
             return View(reservation);
         }
 
+        private bool ReservationExists(int id)
+        {
+            return _context.Reservations.Any(e => e.Id == id);
+        }
+
         // POST: Reservations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var reservation = await _context.Reservations.FindAsync(id);
+            var reservation = await _context.Reservations
+                .Include(r => r.Loans) // Include the associated loans
+                .FirstOrDefaultAsync(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            // Delete the loans associated with the reservation
+            _context.Loans.RemoveRange(reservation.Loans);
+
             _context.Reservations.Remove(reservation);
             await _context.SaveChangesAsync();
             TempData["Message"] = "Reservation deleted successfully.";
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ReservationExists(int id)
-        {
-            return _context.Reservations.Any(e => e.Id == id);
         }
     }
 }

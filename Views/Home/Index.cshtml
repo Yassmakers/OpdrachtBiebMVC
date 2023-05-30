@@ -4,6 +4,9 @@
     ViewData["Title"] = "Home Page";
 }
 
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -124,12 +127,30 @@
                         <td>@item.Year</td>
                         <td>@item.Location</td>
                         <td>
-                            @*                        <!-- Show the "Reserve" button only for authenticated members --> *@
                             @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
-{
-                            <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Items")?itemId=@item.Id">Reserve</a>
-                            <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Items")?itemId=@item.Id">Loan</a>
-}
+                            {
+                                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                                var reservation = item.Reservations?.FirstOrDefault(r => r.UserId.ToString() == userId);
+                                var hasReserved = reservation != null;
+
+                                if (hasReserved)
+                                {
+                                    var loaned = reservation.Loans?.Any(l => l.ItemId == item.Id && l.UserId.ToString() == userId);
+                                    if (loaned.HasValue && loaned.Value)
+                                    {
+                                        <button class="btn btn-secondary btn-sm" disabled>Loaned</button>
+                                    }
+                                    else
+                                    {
+                                        <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Home")?id=@reservation.Id">Loan</a>
+                                    }
+                                }
+                                else
+                                {
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
+                                }
+                            }
                         </td>
                     </tr>
                     <tr class="extra-info">
@@ -140,6 +161,7 @@
                             </div>
                         </td>
                     </tr>
+                }
                 }
             </tbody>
         </table>

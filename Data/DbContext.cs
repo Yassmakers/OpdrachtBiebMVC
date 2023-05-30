@@ -44,6 +44,11 @@ namespace BiebWebApp.Data
                     }
                 );
 
+            modelBuilder
+        .Entity<Item>()
+        .Property(i => i.Status)
+        .HasConversion<int>();
+
             modelBuilder.Entity<Loan>()
         .HasOne(l => l.Reservation)
         .WithMany(r => r.Loans)
@@ -71,21 +76,13 @@ namespace BiebWebApp.Data
                 entity.ToTable("Roles");
             });
 
-            modelBuilder.Entity<Reservation>().HasData(
-                new Reservation
-                {
-                    Id = 1,
-                    UserId = 1, // Assign an existing user ID
-                    ItemId = 1, // Assign an existing item ID
-                    ReservationDate = DateTime.Now
-                }
-            );
+            
 
             modelBuilder.Entity<Item>().HasData(
-                new Item { Id = 1, Title = "Book 1", Author = "Author 1", ItemType = ItemType.Book, Year = 2020, Location = "Library" },
-                new Item { Id = 2, Title = "Book 2", Author = "Author 2", ItemType = ItemType.Book, Year = 2019, Location = "Library" },
-                new Item { Id = 3, Title = "Magazine 1", Author = "Author 3", ItemType = ItemType.Magazine, Year = 2021, Location = "Library" }
-            );
+     new Item { Id = 2, Title = "Book 2", Author = "Author 2", ItemType = ItemType.Book, Year = 2019, Location = "Library", Status = ItemStatus.Available },
+     new Item { Id = 3, Title = "Magazine 1", Author = "Author 3", ItemType = ItemType.Magazine, Year = 2021, Location = "Library", Status = ItemStatus.Available }
+             );
+
 
             modelBuilder.Entity<User>().ToTable("Users");
 

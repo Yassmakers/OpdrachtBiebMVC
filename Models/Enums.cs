@@ -9,6 +9,14 @@ namespace BiebWebApp.Models
         DVD
     }
 
+    public enum ItemStatus
+    {
+        Available,
+        Reserved,
+        Loaned
+    }
+
+
     public enum InvoiceType
     {
         SubscriptionFee,
