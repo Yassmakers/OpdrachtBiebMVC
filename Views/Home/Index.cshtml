@@ -124,12 +124,13 @@
                         <td>@item.Year</td>
                         <td>@item.Location</td>
                         <td>
-@*                        <!-- Show the "Reserve" button only for authenticated members --> *@ 
-                       @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
+                            @*                        <!-- Show the "Reserve" button only for authenticated members --> *@
+                            @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
 {
-    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Items")?itemId=@item.Id">Reserve</a>
+                            <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Items")?itemId=@item.Id">Reserve</a>
+                            <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Items")?itemId=@item.Id">Loan</a>
 }
-                    </td>
+                        </td>
                     </tr>
                     <tr class="extra-info">
                         <td colspan="6">

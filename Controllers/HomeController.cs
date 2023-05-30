@@ -334,6 +334,56 @@ namespace BiebWebApp.Controllers
         }
 
 
+        [Authorize]
+        public IActionResult Loan(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
+
+            if (reservation == null)
+            {
+                return NotFound();
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _userManager.FindByIdAsync(userId).Result;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var loan = new Loan
+            {
+                UserId = user.Id,
+                ItemId = reservation.ItemId,
+                ReservationId = reservation.Id, // Assign the reservation ID to the loan
+                LoanDate = DateTime.Now,
+                ReturnDate = DateTime.Now.AddDays(21) // Set the return date to 3 weeks from now
+            };
+
+            _logger.LogInformation($"Trying to create loan: {loan}");
+            _context.Loans.Add(loan);
+
+            try
+            {
+                _context.SaveChanges(); // Save changes to add the loan
+                _logger.LogInformation($"Loan with ID {loan.Id} created successfully.");
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Exception occurred while saving loan: {e}");
+                return View("Error");
+            }
+
+            TempData["Message"] = "Loan created successfully.";
+
+            return RedirectToAction(nameof(Profile));
+        }
 
 
 
