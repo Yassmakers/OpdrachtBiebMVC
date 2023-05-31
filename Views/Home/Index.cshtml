@@ -151,6 +151,10 @@
                                     <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
                                 }
                             }
+                            else
+                            {
+                                <button class="btn btn-primary btn-sm" disabled>Login to Reserve</button>
+                            }
                         </td>
                     </tr>
                     <tr class="extra-info">
@@ -162,7 +166,7 @@
                         </td>
                     </tr>
                 }
-                }
+                
             </tbody>
         </table>
     }

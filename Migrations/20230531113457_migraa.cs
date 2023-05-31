@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BiebWebApp.Migrations
 {
     /// <inheritdoc />
-    public partial class AddRoleIdToUserpbuthonestlycandyakla : Migration
+    public partial class migraa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -265,22 +265,12 @@ namespace BiebWebApp.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[,]
-                {
-                    { 1, "de1c0650-20b2-45c1-b013-b2011473650e", "Member", null },
-                    { 2, "b37b53ac-8b38-44aa-a318-f90adf25526c", "Administrator", null },
-                    { 3, "220f3d52-14da-443e-a545-e59c3f44d8ef", "Librarian", null }
-                });
-
-            migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "Type", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "ab765bf7-3194-4bb0-84ab-3b86d93dcb17", "johndoe@example.com", false, false, null, "John Doe", null, null, "AQAAAAEAACcQAAAAEFOTmo8OaESkxqRopnsntX8bNl8+31OGPX3JrWFgxgLhO74LuF3iaimHZNx94Z3SXw==", null, false, null, false, 0, "John Doe" },
-                    { 2, 0, "5a9d212d-d7d2-4331-9bb0-7b6a8f1abab6", "janesmith@example.com", false, false, null, "Jane Smith", null, null, "AQAAAAEAACcQAAAAEFrtyZYj05oF7V9hTYOsOEyinMR6vj7UoIflXg/X0//mowwVx6o61jm/EoQdVURLiw==", null, false, null, false, 2, "Jane Smith" }
+                    { 1, 0, "642181dc-977d-422e-858f-859b431995e6", "johndoe@example.com", false, true, null, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAEBjijgUah10+rH1aflqkLkn/E+GMM7dkZfqEjgCsnlToq1jLMfBdnGI90mipkM4rzQ==", null, false, "f51da8a3-4d83-4936-b72a-76addad2b180", false, 0, "John Doe" },
+                    { 2, 0, "639fa059-4e02-4170-afdd-34f482c7e04c", "janesmith@example.com", false, true, null, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAEGAUHjhMhHRZRCTJby79/xq8rzX+ML1IrARekj98NwaKaS/etY9RXMfpdOZHmJGcnw==", null, false, "4d68387a-fc17-4992-b5a5-dc4dad241786", false, 2, "Jane Smith" }
                 });
 
             migrationBuilder.InsertData(
@@ -288,8 +278,34 @@ namespace BiebWebApp.Migrations
                 columns: new[] { "Id", "Author", "ItemType", "Location", "Status", "Title", "Year" },
                 values: new object[,]
                 {
+                    { 1, "Author 1", 0, "Library", 0, "Book 1", 2018 },
                     { 2, "Author 2", 0, "Library", 0, "Book 2", 2019 },
-                    { 3, "Author 3", 1, "Library", 0, "Magazine 1", 2021 }
+                    { 3, "Author 3", 1, "Library", 0, "Magazine 1", 2021 },
+                    { 4, "Author 4", 0, "Library", 0, "Book 3", 2020 },
+                    { 5, "Author 5", 1, "Library", 0, "Magazine 2", 2022 },
+                    { 6, "Author 6", 0, "Library", 0, "Book 4", 2017 },
+                    { 7, "Author 7", 1, "Library", 0, "Magazine 3", 2021 },
+                    { 8, "Author 8", 0, "Library", 0, "Book 5", 2019 },
+                    { 9, "Author 9", 1, "Library", 0, "Magazine 4", 2020 },
+                    { 10, "Author 10", 0, "Library", 0, "Book 6", 2022 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Reservations",
+                columns: new[] { "Id", "ItemId", "ReservationDate", "UserId" },
+                values: new object[,]
+                {
+                    { 1, 2, new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7771), 1 },
+                    { 2, 3, new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7774), 2 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Loans",
+                columns: new[] { "Id", "ItemId", "LoanDate", "ReservationId", "ReturnDate", "UserId" },
+                values: new object[,]
+                {
+                    { 1, 2, new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7712), 1, new DateTime(2023, 6, 14, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7745), 1 },
+                    { 2, 3, new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7749), 2, new DateTime(2023, 6, 14, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7750), 2 }
                 });
 
             migrationBuilder.CreateIndex(

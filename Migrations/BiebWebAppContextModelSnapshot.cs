@@ -88,6 +88,16 @@ namespace BiebWebApp.Migrations
                     b.HasData(
                         new
                         {
+                            Id = 1,
+                            Author = "Author 1",
+                            ItemType = 0,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Book 1",
+                            Year = 2018
+                        },
+                        new
+                        {
                             Id = 2,
                             Author = "Author 2",
                             ItemType = 0,
@@ -105,6 +115,76 @@ namespace BiebWebApp.Migrations
                             Status = 0,
                             Title = "Magazine 1",
                             Year = 2021
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Author = "Author 4",
+                            ItemType = 0,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Book 3",
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Author = "Author 5",
+                            ItemType = 1,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Magazine 2",
+                            Year = 2022
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Author = "Author 6",
+                            ItemType = 0,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Book 4",
+                            Year = 2017
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Author = "Author 7",
+                            ItemType = 1,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Magazine 3",
+                            Year = 2021
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Author = "Author 8",
+                            ItemType = 0,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Book 5",
+                            Year = 2019
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Author = "Author 9",
+                            ItemType = 1,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Magazine 4",
+                            Year = 2020
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Author = "Author 10",
+                            ItemType = 0,
+                            Location = "Library",
+                            Status = 0,
+                            Title = "Book 6",
+                            Year = 2022
                         });
                 });
 
@@ -140,6 +220,26 @@ namespace BiebWebApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Loans");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ItemId = 2,
+                            LoanDate = new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7712),
+                            ReservationId = 1,
+                            ReturnDate = new DateTime(2023, 6, 14, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7745),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ItemId = 3,
+                            LoanDate = new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7749),
+                            ReservationId = 2,
+                            ReturnDate = new DateTime(2023, 6, 14, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7750),
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("BiebWebApp.Models.Reservation", b =>
@@ -166,6 +266,22 @@ namespace BiebWebApp.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reservations");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ItemId = 2,
+                            ReservationDate = new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7771),
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ItemId = 3,
+                            ReservationDate = new DateTime(2023, 5, 24, 13, 34, 57, 110, DateTimeKind.Local).AddTicks(7774),
+                            UserId = 2
+                        });
                 });
 
             modelBuilder.Entity("BiebWebApp.Models.User", b =>
@@ -247,13 +363,16 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "ab765bf7-3194-4bb0-84ab-3b86d93dcb17",
+                            ConcurrencyStamp = "642181dc-977d-422e-858f-859b431995e6",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
-                            LockoutEnabled = false,
+                            LockoutEnabled = true,
                             Name = "John Doe",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFOTmo8OaESkxqRopnsntX8bNl8+31OGPX3JrWFgxgLhO74LuF3iaimHZNx94Z3SXw==",
+                            NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
+                            NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEBjijgUah10+rH1aflqkLkn/E+GMM7dkZfqEjgCsnlToq1jLMfBdnGI90mipkM4rzQ==",
                             PhoneNumberConfirmed = false,
+                            SecurityStamp = "f51da8a3-4d83-4936-b72a-76addad2b180",
                             TwoFactorEnabled = false,
                             Type = 0,
                             UserName = "John Doe"
@@ -262,13 +381,16 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5a9d212d-d7d2-4331-9bb0-7b6a8f1abab6",
+                            ConcurrencyStamp = "639fa059-4e02-4170-afdd-34f482c7e04c",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
-                            LockoutEnabled = false,
+                            LockoutEnabled = true,
                             Name = "Jane Smith",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFrtyZYj05oF7V9hTYOsOEyinMR6vj7UoIflXg/X0//mowwVx6o61jm/EoQdVURLiw==",
+                            NormalizedEmail = "JANESMITH@EXAMPLE.COM",
+                            NormalizedUserName = "JANESMITH@EXAMPLE.COM",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGAUHjhMhHRZRCTJby79/xq8rzX+ML1IrARekj98NwaKaS/etY9RXMfpdOZHmJGcnw==",
                             PhoneNumberConfirmed = false,
+                            SecurityStamp = "4d68387a-fc17-4992-b5a5-dc4dad241786",
                             TwoFactorEnabled = false,
                             Type = 2,
                             UserName = "Jane Smith"
@@ -303,26 +425,6 @@ namespace BiebWebApp.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ConcurrencyStamp = "de1c0650-20b2-45c1-b013-b2011473650e",
-                            Name = "Member"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ConcurrencyStamp = "b37b53ac-8b38-44aa-a318-f90adf25526c",
-                            Name = "Administrator"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            ConcurrencyStamp = "220f3d52-14da-443e-a545-e59c3f44d8ef",
-                            Name = "Librarian"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -450,7 +552,7 @@ namespace BiebWebApp.Migrations
                     b.HasOne("BiebWebApp.Models.Reservation", "Reservation")
                         .WithMany("Loans")
                         .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BiebWebApp.Models.User", "User")

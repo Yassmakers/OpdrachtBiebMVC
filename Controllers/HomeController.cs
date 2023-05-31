@@ -110,8 +110,15 @@ namespace BiebWebApp.Controllers
                         if (reservation != null)
                         {
                             item.Reservations = new List<Reservation> { reservation };
+                            item.Status = ItemStatus.Reserved; // Update the status of the item to 'Reserved'
+                        }
+                        else
+                        {
+                            item.Status = ItemStatus.Available; // Update the status of the item to 'Available'
                         }
                     }
+
+                    _context.SaveChanges(); // Save changes to the database
                 }
             }
 
