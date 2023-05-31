@@ -12,6 +12,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace BiebWebApp.Controllers
 {
@@ -41,19 +42,26 @@ namespace BiebWebApp.Controllers
             var reservations = _context.Reservations
                 .Include(r => r.User)
                 .Include(r => r.Item)
-                .Include(r => r.Loans) // Include the Loans navigation property
-                .ThenInclude(l => l.Item) // Include the Item associated with the Loan
+                .Include(r => r.Loans)
+                .ThenInclude(l => l.Item)
                 .Where(r => r.UserId == user.Id)
                 .ToList();
+
+            var hasSubscription = user.HasSubscription; // Retrieve the subscription status
 
             var model = new ProfileViewModel
             {
                 User = user,
-                Reservations = reservations ?? new List<Reservation>()
+                Reservations = reservations ?? new List<Reservation>(),
+                HasSubscription = hasSubscription // Set the subscription status in the view model
             };
+
+            ViewBag.HasSubscription = hasSubscription; // Set the subscription status in the ViewBag
 
             return View(model);
         }
+
+
 
 
 
@@ -91,6 +99,31 @@ namespace BiebWebApp.Controllers
 
             var items = itemsQuery.ToList();
 
+            foreach (var item in items)
+            {
+                var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
+
+                if (reservation != null)
+                {
+                    item.Status = ItemStatus.Reserved; // Update the status of the item to 'Reserved'
+                }
+                else
+                {
+                    item.Status = ItemStatus.Available; // Update the status of the item to 'Available'
+                }
+
+                var loan = _context.Loans.FirstOrDefault(l => l.ItemId == item.Id && l.ReturnDate >= DateTime.Now);
+
+                if (loan != null)
+                {
+                    item.Status = ItemStatus.Loaned; // Update the status of the item to 'Loaned'
+                }
+            }
+
+            _context.SaveChanges(); // Save changes to the database to update the item statuses
+
+            ViewBag.HasSubscription = false; // Set the initial value of HasSubscription to false
+
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -98,32 +131,14 @@ namespace BiebWebApp.Controllers
 
                 if (user != null)
                 {
-                    var userReservations = _context.Reservations
-                        .Include(r => r.Loans)
-                        .Where(r => r.UserId == user.Id)
-                        .ToList();
-
-                    foreach (var item in items)
-                    {
-                        var reservation = userReservations.FirstOrDefault(r => r.ItemId == item.Id);
-
-                        if (reservation != null)
-                        {
-                            item.Reservations = new List<Reservation> { reservation };
-                            item.Status = ItemStatus.Reserved; // Update the status of the item to 'Reserved'
-                        }
-                        else
-                        {
-                            item.Status = ItemStatus.Available; // Update the status of the item to 'Available'
-                        }
-                    }
-
-                    _context.SaveChanges(); // Save changes to the database
+                    ViewBag.HasSubscription = user.HasSubscription; // Set the value of HasSubscription based on the user's subscription status
                 }
             }
 
             return View(items);
         }
+
+
 
 
 
@@ -194,6 +209,7 @@ namespace BiebWebApp.Controllers
 
             return RedirectToAction(nameof(Profile));
         }
+
 
 
         [Authorize]
@@ -460,6 +476,50 @@ namespace BiebWebApp.Controllers
 
 
 
+
+        [Authorize]
+        [HttpGet, HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Subscribe()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _userManager.FindByIdAsync(userId).Result;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.HasSubscription = true; // Set the subscription status to true
+            _context.SaveChanges();
+
+            TempData["Message"] = "Subscription created successfully.";
+
+            return RedirectToAction(nameof(Profile));
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Unsubscribe()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = _userManager.FindByIdAsync(userId).Result;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.HasSubscription = false; // Set the subscription status to false
+            _context.SaveChanges();
+
+            TempData["Message"] = "Subscription cancelled successfully.";
+
+            return RedirectToAction(nameof(Profile));
+        }
+
+       
 
 
 

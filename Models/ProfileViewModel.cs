@@ -7,5 +7,7 @@ namespace BiebWebApp.Models
     {
         public User User { get; set; }
         public List<Reservation> Reservations { get; set; }
+
+        public bool HasSubscription { get; set; } // subscribit
     }
 }

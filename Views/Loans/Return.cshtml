@@ -1,0 +1,35 @@
+﻿@model BiebWebApp.Models.Loan
+
+@{
+    ViewData["Title"] = "Return Item";
+}
+
+<h1>Return Item</h1>
+
+<form asp-action="Return" method="post">
+    <h4>Are you sure you want to return this item?</h4>
+    <div>
+        <label asp-for="Item.Title"></label>
+        <input asp-for="Item.Title" disabled />
+    </div>
+    <div>
+        <label asp-for="Item.Author"></label>
+        <input asp-for="Item.Author" disabled />
+    </div>
+    <div>
+        <label asp-for="Item.Location"></label>
+        <input asp-for="Item.Location" disabled />
+    </div>
+    <div>
+        <label asp-for="LoanDate"></label>
+        <input asp-for="LoanDate" disabled />
+    </div>
+    <div>
+        <label asp-for="ReturnDate"></label>
+        <input asp-for="ReturnDate" disabled />
+    </div>
+    <div>
+        <input type="submit" value="Return" class="btn btn-primary" />
+        <a asp-action="Profile" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>

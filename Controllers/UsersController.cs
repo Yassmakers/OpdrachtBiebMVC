@@ -42,24 +42,28 @@ namespace BiebWebApp.Controllers
         [AllowAnonymous]
         public IActionResult Create()
         {
-            return View();
+            return View("Register");
         }
 
         // POST: Users/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type,Email")] User user, string password)
+        public async Task<IActionResult> Create(RegisterModel model)
         {
             if (ModelState.IsValid)
             {
-                user.UserName = user.Name;
-                user.SecurityStamp = Guid.NewGuid().ToString();
+                var user = new User
+                {
+                    UserName = model.Email,
+                    Name = model.Name,
+                    Email = model.Email,
+                    Type = model.Type
+                };
 
-                var result = await _userManager.CreateAsync(user, password);
+                var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Set the role name based on the user type
                     string roleName;
                     switch (user.Type)
                     {
@@ -76,13 +80,11 @@ namespace BiebWebApp.Controllers
                             throw new ArgumentException("Invalid user type");
                     }
 
-                    // Check if the role exists, if not, create it
                     if (!await _roleManager.RoleExistsAsync(roleName))
                     {
                         await _roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
                     }
 
-                    // Add the user to the role
                     await _userManager.AddToRoleAsync(user, roleName);
 
                     return RedirectToAction(nameof(Index));
@@ -94,7 +96,7 @@ namespace BiebWebApp.Controllers
                 }
             }
 
-            return View(user);
+            return View("Register", model);
         }
 
 
@@ -106,15 +108,23 @@ namespace BiebWebApp.Controllers
             {
                 return NotFound();
             }
-            return View(user);
+
+            var model = new EditUserModel
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Type = user.Type
+            };
+
+            return View(model);
         }
 
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type")] User user)
+        public async Task<IActionResult> Edit(int id, EditUserModel model)
         {
-            if (id != user.Id)
+            if (id != model.Id)
             {
                 return NotFound();
             }
@@ -129,8 +139,8 @@ namespace BiebWebApp.Controllers
                         return NotFound();
                     }
 
-                    existingUser.Name = user.Name;
-                    existingUser.Type = user.Type;
+                    existingUser.Name = model.Name;
+                    existingUser.Type = model.Type;
 
                     await _userManager.UpdateAsync(existingUser); // Update the user
 
@@ -139,7 +149,7 @@ namespace BiebWebApp.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UserExists(user.Id))
+                    if (!UserExists(model.Id))
                     {
                         return NotFound();
                     }
@@ -150,8 +160,9 @@ namespace BiebWebApp.Controllers
                 }
             }
 
-            return View(user);
+            return View(model);
         }
+
 
 
         // GET: Users/Delete/5
@@ -178,8 +189,9 @@ namespace BiebWebApp.Controllers
 
         private async Task<User> FindUserById(int id)
         {
-            return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return await _userManager.Users.FirstOrDefaultAsync(e => e.Id == id);
         }
+
 
 
         private bool UserExists(int id)

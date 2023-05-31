@@ -4,13 +4,10 @@ using BiebWebApp.Data;
 using BiebWebApp.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
-
 
 namespace BiebWebApp.Controllers
 {
+    [Authorize]
     public class ItemsController : Controller
     {
         private readonly BiebWebAppContext _context;
@@ -20,70 +17,11 @@ namespace BiebWebApp.Controllers
             _context = context;
         }
 
-        // GET: Items/Reserve/5
-        [Authorize] // Ensure the user is logged in
-        public async Task<IActionResult> Reserve(int? itemId)
-        {
-            if (itemId == null)
-            {
-                return NotFound();
-            }
-
-            var item = await _context.Items.FindAsync(itemId);
-            if (item == null)
-            {
-                return NotFound();
-            }
-
-            // Get the current user's ID
-            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdString, out var userId))
-            {
-                // Handle error here: the user ID was not an integer
-                return BadRequest();
-            }
-
-            // Create a new reservation
-            var reservation = new Reservation
-            {
-                ItemId = item.Id,
-                UserId = userId,
-                ReservationDate = DateTime.Now,
-                Item = item // Include the item in the reservation
-            };
-
-            return View(reservation); // Returns a view that asks the user to confirm the reservation
-        }
-
-
-        [Authorize]
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> ReserveConfirmed(Reservation reservation)
-        {
-            // Check if the user has already reserved the item (additional validation)
-            var existingReservation = await _context.Reservations
-                .FirstOrDefaultAsync(r => r.ItemId == reservation.ItemId && r.UserId == reservation.UserId);
-
-            if (existingReservation != null)
-            {
-                TempData["Message"] = "You have already reserved this item."; // Set error message
-                return RedirectToAction("Index", "Home"); // Redirect to the home view index
-            }
-
-            _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
-
-            TempData["Message"] = "Reservation completed successfully."; // Set success message
-
-            return RedirectToAction("Index", "Home"); // Redirect to the home view index
-        }
-
-
         // GET: Items
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Items.ToListAsync());
+            var items = await _context.Items.ToListAsync();
+            return View(items);
         }
 
         // GET: Items/Details/5
@@ -96,6 +34,7 @@ namespace BiebWebApp.Controllers
 
             var item = await _context.Items
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (item == null)
             {
                 return NotFound();
@@ -113,14 +52,25 @@ namespace BiebWebApp.Controllers
         // POST: Items/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Author,ItemType,Year,Location,Status")] Item model)
+        public async Task<IActionResult> Create(CreateItemModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(model);
+                var item = new Item
+                {
+                    Title = model.Title,
+                    Author = model.Author,
+                    ItemType = model.ItemType,
+                    Year = model.Year,
+                    Location = model.Location,
+                    Status = model.Status
+                };
+
+                _context.Items.Add(item);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(model);
         }
 
@@ -137,13 +87,25 @@ namespace BiebWebApp.Controllers
             {
                 return NotFound();
             }
-            return View(item);
+
+            var model = new EditItemModel
+            {
+                Id = item.Id,
+                Title = item.Title,
+                Author = item.Author,
+                ItemType = item.ItemType,
+                Year = item.Year,
+                Location = item.Location,
+                Status = item.Status
+            };
+
+            return View(model);
         }
 
         // POST: Items/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Author,ItemType,Year,Location,Status")] Item model)
+        public async Task<IActionResult> Edit(int id, EditItemModel model)
         {
             if (id != model.Id)
             {
@@ -154,12 +116,25 @@ namespace BiebWebApp.Controllers
             {
                 try
                 {
-                    _context.Update(model);
+                    var item = await _context.Items.FindAsync(id);
+                    if (item == null)
+                    {
+                        return NotFound();
+                    }
+
+                    item.Title = model.Title;
+                    item.Author = model.Author;
+                    item.ItemType = model.ItemType;
+                    item.Year = model.Year;
+                    item.Location = model.Location;
+                    item.Status = model.Status;
+
+                    _context.Update(item);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ItemExists(model.Id))
+                    if (!ItemExists(id))
                     {
                         return NotFound();
                     }
@@ -170,9 +145,9 @@ namespace BiebWebApp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(model);
         }
-
         // GET: Items/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -183,6 +158,7 @@ namespace BiebWebApp.Controllers
 
             var item = await _context.Items
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (item == null)
             {
                 return NotFound();

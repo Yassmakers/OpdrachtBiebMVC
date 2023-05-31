@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 
+
 namespace BiebWebApp.Controllers
 {
     public class LoansController : Controller
@@ -18,10 +19,20 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans
-        public async Task<IActionResult> Index()
+        // GET: Loans
+        public async Task<IActionResult> Index(string searchString)
         {
-            var loans = _context.Loans.Include(l => l.User).Include(l => l.Item);
-            return View(await loans.ToListAsync());
+            var loansQuery = _context.Loans.Include(l => l.User).Include(l => l.Item);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                loansQuery = loansQuery.Where(l => l.User.Name.Contains(searchString))
+                                       .Include(l => l.Item);
+            }
+
+            var loans = await loansQuery.ToListAsync();
+
+            return View(loans);
         }
 
         // GET: Loans/Details/5
@@ -140,6 +151,39 @@ namespace BiebWebApp.Controllers
 
             return View(loan);
         }
+
+        // GET: Loans/Return/5
+        public async Task<IActionResult> Return(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var loan = await _context.Loans
+                .Include(l => l.Item)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (loan == null)
+            {
+                return NotFound();
+            }
+
+            loan.ReturnDate = DateTime.Now;
+
+            var item = loan.Item;
+            if (item != null && item.Status == ItemStatus.Reserved) // Check if the item is currently "Reserved"
+            {
+                item.Status = ItemStatus.Available; // Set the status of the item to 'Available'
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Item returned successfully.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
         // POST: Loans/Delete/5
         [HttpPost, ActionName("Delete")]

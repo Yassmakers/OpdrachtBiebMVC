@@ -1,6 +1,16 @@
-﻿@model IEnumerable<BiebWebApp.Models.Loan>
+﻿@using Microsoft.AspNetCore.Http
+@model IEnumerable<BiebWebApp.Models.Loan>
 
 <h1>List of Loans</h1>
+
+<form method="get">
+    <div class="form-group">
+        <label for="searchString">Search by user name:</label>
+        <input type="text" id="searchString" name="searchString" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
 
 @if (Model.Any())
 {
@@ -25,7 +35,8 @@
                     <td>
                         <a asp-action="Details" asp-route-id="@loan.Id">Details</a> |
                         <a asp-action="Edit" asp-route-id="@loan.Id">Edit</a> |
-                        <a asp-action="Delete" asp-route-id="@loan.Id">Delete</a>
+                        <a asp-action="Delete" asp-route-id="@loan.Id">Delete</a> |
+                        <a asp-action="Return" asp-route-id="@loan.Id">Return Item</a> <!-- Added the "Return Item" button -->
                     </td>
                 </tr>
             }

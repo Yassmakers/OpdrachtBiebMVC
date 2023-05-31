@@ -115,6 +115,7 @@
                     <th>Type</th>
                     <th>Year</th>
                     <th>Location</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -148,13 +149,29 @@
                                 }
                                 else
                                 {
-                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
+                                    if (item.Status == ItemStatus.Reserved)
+                                    {
+                                        <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
+                                    }
+                                    else if (item.Status == ItemStatus.Loaned)
+                                    {
+                                        <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
+                                    }
+                                    else if (ViewBag.HasSubscription)
+                                    {
+                                        <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
+                                    }
+                                    else
+                                    {
+                                        <button class="btn btn-primary btn-sm" disabled>No Subscription</button>
+                                    }
                                 }
                             }
                             else
                             {
                                 <button class="btn btn-primary btn-sm" disabled>Login to Reserve</button>
                             }
+
                         </td>
                     </tr>
                     <tr class="extra-info">
@@ -166,7 +183,6 @@
                         </td>
                     </tr>
                 }
-                
             </tbody>
         </table>
     }
@@ -190,40 +206,36 @@
                 $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
             });
 
-            var rows = document.querySelectorAll('.table tr');
-
+            var rows = document.querySelectorAll('.table tbody tr');
             rows.forEach(function (row) {
                 row.addEventListener('click', function () {
-                    var nextRow = row.nextElementSibling;
-
-                    if (nextRow.classList.contains('extra-info')) {
-                        nextRow.classList.toggle('show');
+                    var extraInfoRow = row.nextElementSibling;
+                    if (extraInfoRow.classList.contains('extra-info')) {
+                        extraInfoRow.classList.toggle('show');
                     }
                 });
             });
 
-            // Apply filter button click event
             $('#filterBtn').click(function () {
                 var authorFilter = $('#authorFilterInput').val().trim();
                 var yearFilter = $('#yearFilterInput').val().trim();
-                var currentUrl = new URL(window.location.href);
 
-                if (authorFilter !== '') {
-                    currentUrl.searchParams.set('author', authorFilter);
-                } else {
-                    currentUrl.searchParams.delete('author');
-                }
+                // Send the filter values to the server or update the table using JavaScript
 
-                if (yearFilter !== '') {
-                    currentUrl.searchParams.set('year', yearFilter);
-                } else {
-                    currentUrl.searchParams.delete('year');
-                }
-
-                window.location.href = currentUrl.href;
+                // Example using JavaScript to filter the table on the client side
+                var rows = document.querySelectorAll('.table tbody tr');
+                rows.forEach(function (row) {
+                    var authorCell = row.querySelector('td:nth-child(2)');
+                    var yearCell = row.querySelector('td:nth-child(4)');
+                    if (authorCell.textContent.toLowerCase().includes(authorFilter.toLowerCase()) &&
+                        yearCell.textContent.trim() === yearFilter) {
+                        row.style.display = 'table-row';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
             });
         });
     </script>
-
 </body>
 </html>
