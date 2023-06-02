@@ -270,8 +270,8 @@ namespace BiebWebApp.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "HasSubscription", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "Type", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "0adc95ea-cfb0-49f9-a134-f59500b95b00", "johndoe@example.com", false, false, true, null, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAEIgko5n54xHKX8iNi6u5tNpZSr+kjEI/DYFc9xRGWWhQ9/M+aWNyAuK0Jgk09iRyog==", null, false, "81b8f2fa-dd82-45bc-8444-da96eee2d026", false, 0, "John Doe" },
-                    { 2, 0, "c1169448-9bfa-4b62-981b-02cb3acd00e0", "janesmith@example.com", false, false, true, null, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAECvg1nQM6z/kgq5PQsBPqEjNNURJm7Bv/3nsxRqwl4+vE5QTSoPpBFrerhnUQ17dZw==", null, false, "93bac2a4-f41c-4dd8-b7b4-071d3c9c52fe", false, 2, "Jane Smith" }
+                    { 1, 0, "976e0fad-a598-4113-a43c-4fe51cc99c2b", "johndoe@example.com", false, false, true, null, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAELrLsFjo5W4RkMWTvl7PmOuba3foArZ/w6P8TtitlT37OfiUnQOAiRooD5id27B4VQ==", null, false, "6d6b38f9-9d3a-4f31-9476-8982a20f0a3b", false, 0, "John Doe" },
+                    { 2, 0, "8c58c7ff-d3eb-4ee7-8e2d-46d7f042faa3", "janesmith@example.com", false, false, true, null, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAEOavIsiKX996T2dxOe08Zs5iXoCJZnmYFefthSsuVCl9pudJVfghMpMoXWiRhbX3Ag==", null, false, "c8841063-a292-440e-a68f-fe6ad3fc971c", false, 2, "Jane Smith" }
                 });
 
             migrationBuilder.InsertData(
@@ -296,14 +296,14 @@ namespace BiebWebApp.Migrations
                 columns: new[] { "Id", "ItemId", "ReservationDate", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 2, new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6454), 1 },
-                    { 2, 3, new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6456), 2 }
+                    { 1, 2, new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2049), 1 },
+                    { 2, 3, new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2051), 2 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Loans",
                 columns: new[] { "Id", "ItemId", "LoanDate", "ReservationId", "ReturnDate", "UserId" },
-                values: new object[] { 1, 2, new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6399), 1, new DateTime(2023, 6, 16, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6433), 1 });
+                values: new object[] { 1, 2, new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(1992), 1, new DateTime(2023, 6, 16, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2025), 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

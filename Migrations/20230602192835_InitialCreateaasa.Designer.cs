@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BiebWebApp.Migrations
 {
     [DbContext(typeof(BiebWebAppContext))]
-    [Migration("20230602192413_InitialCreateaasa")]
+    [Migration("20230602192835_InitialCreateaasa")]
     partial class InitialCreateaasa
     {
         /// <inheritdoc />
@@ -229,9 +229,9 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            LoanDate = new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6399),
+                            LoanDate = new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(1992),
                             ReservationId = 1,
-                            ReturnDate = new DateTime(2023, 6, 16, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6433),
+                            ReturnDate = new DateTime(2023, 6, 16, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2025),
                             UserId = 1
                         });
                 });
@@ -266,14 +266,14 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            ReservationDate = new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6454),
+                            ReservationDate = new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2049),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
                             ItemId = 3,
-                            ReservationDate = new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6456),
+                            ReservationDate = new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2051),
                             UserId = 2
                         });
                 });
@@ -360,7 +360,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0adc95ea-cfb0-49f9-a134-f59500b95b00",
+                            ConcurrencyStamp = "976e0fad-a598-4113-a43c-4fe51cc99c2b",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
@@ -368,9 +368,9 @@ namespace BiebWebApp.Migrations
                             Name = "John Doe",
                             NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
                             NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEIgko5n54xHKX8iNi6u5tNpZSr+kjEI/DYFc9xRGWWhQ9/M+aWNyAuK0Jgk09iRyog==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELrLsFjo5W4RkMWTvl7PmOuba3foArZ/w6P8TtitlT37OfiUnQOAiRooD5id27B4VQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "81b8f2fa-dd82-45bc-8444-da96eee2d026",
+                            SecurityStamp = "6d6b38f9-9d3a-4f31-9476-8982a20f0a3b",
                             TwoFactorEnabled = false,
                             Type = 0,
                             UserName = "John Doe"
@@ -379,7 +379,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c1169448-9bfa-4b62-981b-02cb3acd00e0",
+                            ConcurrencyStamp = "8c58c7ff-d3eb-4ee7-8e2d-46d7f042faa3",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
@@ -387,9 +387,9 @@ namespace BiebWebApp.Migrations
                             Name = "Jane Smith",
                             NormalizedEmail = "JANESMITH@EXAMPLE.COM",
                             NormalizedUserName = "JANESMITH@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAECvg1nQM6z/kgq5PQsBPqEjNNURJm7Bv/3nsxRqwl4+vE5QTSoPpBFrerhnUQ17dZw==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEOavIsiKX996T2dxOe08Zs5iXoCJZnmYFefthSsuVCl9pudJVfghMpMoXWiRhbX3Ag==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "93bac2a4-f41c-4dd8-b7b4-071d3c9c52fe",
+                            SecurityStamp = "c8841063-a292-440e-a68f-fe6ad3fc971c",
                             TwoFactorEnabled = false,
                             Type = 2,
                             UserName = "Jane Smith"

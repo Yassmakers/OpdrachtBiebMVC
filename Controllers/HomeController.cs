@@ -47,12 +47,19 @@ namespace BiebWebApp.Controllers
                 .Where(r => r.UserId == user.Id)
                 .ToList();
 
+            var loans = _context.Loans
+                .Include(l => l.User)
+                .Include(l => l.Item)
+                .Where(l => l.UserId == user.Id && l.ReturnDate < DateTime.Now) // Fetch loans with return dates in the past
+                .ToList();
+
             var hasSubscription = user.HasSubscription; // Retrieve the subscription status
 
             var model = new ProfileViewModel
             {
                 User = user,
                 Reservations = reservations ?? new List<Reservation>(),
+                Loans = loans ?? new List<Loan>(), // Assign the list of loans to the model
                 HasSubscription = hasSubscription // Set the subscription status in the view model
             };
 
@@ -60,6 +67,7 @@ namespace BiebWebApp.Controllers
 
             return View(model);
         }
+
 
 
 

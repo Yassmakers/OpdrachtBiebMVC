@@ -27,11 +27,8 @@
 
                     @if (reservation.Loans != null && reservation.Loans.Count > 0)
                     {
-                        foreach (var loan in reservation.Loans)
-                        {
-                            <td>@loan.LoanDate</td>
-                            <td>@loan.ReturnDate</td>
-                        }
+                        <td>@reservation.Loans.First().LoanDate</td>
+                        <td>@reservation.Loans.First().ReturnDate</td>
                     }
                     else
                     {
@@ -48,7 +45,18 @@
 }
 else
 {
-    <p>No reservations found.</p>
+    <p>No reservations or loans found.</p>
+}
+
+@if (Model.User.Loans.Count > 0)
+{
+    <h5>Old Borrowed Items History</h5>
+    <ul>
+        @foreach (var loan in Model.User.Loans)
+        {
+            <li>@loan.Item.Title - Loan Date: @loan.LoanDate, Return Date: @loan.ReturnDate</li>
+        }
+    </ul>
 }
 
 @if (TempData["Message"] != null)
