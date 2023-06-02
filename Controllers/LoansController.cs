@@ -153,6 +153,7 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans/Return/5
+        // GET: Loans/Return/5
         public async Task<IActionResult> Return(int? id)
         {
             if (id == null)
@@ -172,9 +173,16 @@ namespace BiebWebApp.Controllers
             loan.ReturnDate = DateTime.Now;
 
             var item = loan.Item;
-            if (item != null && item.Status == ItemStatus.Reserved) // Check if the item is currently "Reserved"
+            if (item != null && item.Status == ItemStatus.Loaned) // Check if the item is currently "Loaned"
             {
                 item.Status = ItemStatus.Available; // Set the status of the item to 'Available'
+            }
+
+            // Remove the reservation associated with the returned item
+            var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
+            if (reservation != null)
+            {
+                _context.Reservations.Remove(reservation);
             }
 
             await _context.SaveChangesAsync();

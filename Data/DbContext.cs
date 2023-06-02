@@ -56,10 +56,10 @@ namespace BiebWebApp.Data
                     }
                 );
 
-
             modelBuilder.Entity<Item>()
                 .Property(i => i.Status)
                 .HasConversion<int>();
+
             modelBuilder.Entity<Loan>().HasData(
                 new Loan { Id = 1, UserId = 1, ItemId = 2, ReservationId = 1, LoanDate = DateTime.Now.AddDays(-7), ReturnDate = DateTime.Now.AddDays(14) }
             );
@@ -70,24 +70,25 @@ namespace BiebWebApp.Data
             );
 
             modelBuilder.Entity<Item>().HasData(
-     new Item { Id = 1, Title = "Book 1", Author = "Author 1", ItemType = ItemType.Book, Year = 2018, Location = "Library" },
-     new Item { Id = 2, Title = "Book 2", Author = "Author 2", ItemType = ItemType.Book, Year = 2019, Location = "Library" },
-     new Item { Id = 3, Title = "Magazine 1", Author = "Author 3", ItemType = ItemType.Magazine, Year = 2021, Location = "Library" },
-     new Item { Id = 4, Title = "Book 3", Author = "Author 4", ItemType = ItemType.Book, Year = 2020, Location = "Library" },
-     new Item { Id = 5, Title = "Magazine 2", Author = "Author 5", ItemType = ItemType.Magazine, Year = 2022, Location = "Library" },
-     new Item { Id = 6, Title = "Book 4", Author = "Author 6", ItemType = ItemType.Book, Year = 2017, Location = "Library" },
-     new Item { Id = 7, Title = "Magazine 3", Author = "Author 7", ItemType = ItemType.Magazine, Year = 2021, Location = "Library" },
-     new Item { Id = 8, Title = "Book 5", Author = "Author 8", ItemType = ItemType.Book, Year = 2019, Location = "Library" },
-     new Item { Id = 9, Title = "Magazine 4", Author = "Author 9", ItemType = ItemType.Magazine, Year = 2020, Location = "Library" },
-     new Item { Id = 10, Title = "Book 6", Author = "Author 10", ItemType = ItemType.Book, Year = 2022, Location = "Library" }
- );
-
+                new Item { Id = 1, Title = "Book 1", Author = "Author 1", ItemType = ItemType.Book, Year = 2018, Location = "Library" },
+                new Item { Id = 2, Title = "Book 2", Author = "Author 2", ItemType = ItemType.Book, Year = 2019, Location = "Library" },
+                new Item { Id = 3, Title = "Magazine 1", Author = "Author 3", ItemType = ItemType.Magazine, Year = 2021, Location = "Library" },
+                new Item { Id = 4, Title = "Book 3", Author = "Author 4", ItemType = ItemType.Book, Year = 2020, Location = "Library" },
+                new Item { Id = 5, Title = "Magazine 2", Author = "Author 5", ItemType = ItemType.Magazine, Year = 2022, Location = "Library" },
+                new Item { Id = 6, Title = "Book 4", Author = "Author 6", ItemType = ItemType.Book, Year = 2017, Location = "Library" },
+                new Item { Id = 7, Title = "Magazine 3", Author = "Author 7", ItemType = ItemType.Magazine, Year = 2021, Location = "Library" },
+                new Item { Id = 8, Title = "Book 5", Author = "Author 8", ItemType = ItemType.Book, Year = 2019, Location = "Library" },
+                new Item { Id = 9, Title = "Magazine 4", Author = "Author 9", ItemType = ItemType.Magazine, Year = 2020, Location = "Library" },
+                new Item { Id = 10, Title = "Book 6", Author = "Author 10", ItemType = ItemType.Book, Year = 2022, Location = "Library" }
+            );
 
             modelBuilder.Entity<Loan>()
-                .HasOne(l => l.Reservation)
-                .WithMany(r => r.Loans)
-                .HasForeignKey(l => l.ReservationId)
-                .OnDelete(DeleteBehavior.NoAction); // Change DeleteBehavior.Restrict to DeleteBehavior.NoAction
+     .HasOne(l => l.Reservation)
+     .WithMany(r => r.Loans)
+     .HasForeignKey(l => l.ReservationId)
+     .OnDelete(DeleteBehavior.NoAction);
+
+
 
             modelBuilder.Entity<User>().ToTable("Users");
 

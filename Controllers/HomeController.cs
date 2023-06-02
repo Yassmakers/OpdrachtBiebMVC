@@ -67,6 +67,12 @@ namespace BiebWebApp.Controllers
 
         public IActionResult Index(string searchString, string filter, string author, int? year)
         {
+            if (HttpContext.Request.Path == "/loans")
+            {
+                // If the user is accessing the Loans page, return the view without updating item statuses
+                return View(new List<Item>());
+            }
+
             IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
 
             if (!string.IsNullOrEmpty(searchString))
