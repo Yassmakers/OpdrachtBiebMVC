@@ -202,7 +202,7 @@ namespace BiebWebApp.Migrations
                     b.Property<DateTime>("LoanDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("ReservationId")
+                    b.Property<int?>("ReservationId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReturnDate")
@@ -226,9 +226,9 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            LoanDate = new DateTime(2023, 5, 26, 17, 41, 6, 643, DateTimeKind.Local).AddTicks(3693),
+                            LoanDate = new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6399),
                             ReservationId = 1,
-                            ReturnDate = new DateTime(2023, 6, 16, 17, 41, 6, 643, DateTimeKind.Local).AddTicks(3721),
+                            ReturnDate = new DateTime(2023, 6, 16, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6433),
                             UserId = 1
                         });
                 });
@@ -263,14 +263,14 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            ReservationDate = new DateTime(2023, 5, 26, 17, 41, 6, 643, DateTimeKind.Local).AddTicks(3741),
+                            ReservationDate = new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6454),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
                             ItemId = 3,
-                            ReservationDate = new DateTime(2023, 5, 26, 17, 41, 6, 643, DateTimeKind.Local).AddTicks(3743),
+                            ReservationDate = new DateTime(2023, 5, 26, 21, 24, 13, 845, DateTimeKind.Local).AddTicks(6456),
                             UserId = 2
                         });
                 });
@@ -357,7 +357,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "22f07bbf-f638-48cf-98a4-8d11e8890e52",
+                            ConcurrencyStamp = "0adc95ea-cfb0-49f9-a134-f59500b95b00",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
@@ -365,9 +365,9 @@ namespace BiebWebApp.Migrations
                             Name = "John Doe",
                             NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
                             NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEEs/TjqJW7uk7I+p2woW9u45bPRq7cmSzrqLUNc1u5E/YW9VhrsAdGXKWzlo7RtLHQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEIgko5n54xHKX8iNi6u5tNpZSr+kjEI/DYFc9xRGWWhQ9/M+aWNyAuK0Jgk09iRyog==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "2407bba1-54ff-4105-9903-ab0d84b5e7c8",
+                            SecurityStamp = "81b8f2fa-dd82-45bc-8444-da96eee2d026",
                             TwoFactorEnabled = false,
                             Type = 0,
                             UserName = "John Doe"
@@ -376,7 +376,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "54538994-0ce1-4287-a601-d5b51a1ff259",
+                            ConcurrencyStamp = "c1169448-9bfa-4b62-981b-02cb3acd00e0",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
@@ -384,9 +384,9 @@ namespace BiebWebApp.Migrations
                             Name = "Jane Smith",
                             NormalizedEmail = "JANESMITH@EXAMPLE.COM",
                             NormalizedUserName = "JANESMITH@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEFCJlGbG9sb4jtOqLTXCNucU9tilPXUz47icccNeBLGkn/0NJW/aPSmXMmZBOfipRA==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECvg1nQM6z/kgq5PQsBPqEjNNURJm7Bv/3nsxRqwl4+vE5QTSoPpBFrerhnUQ17dZw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "03cf9547-4431-489d-aef2-759578e568d5",
+                            SecurityStamp = "93bac2a4-f41c-4dd8-b7b4-071d3c9c52fe",
                             TwoFactorEnabled = false,
                             Type = 2,
                             UserName = "Jane Smith"
@@ -548,8 +548,7 @@ namespace BiebWebApp.Migrations
                     b.HasOne("BiebWebApp.Models.Reservation", "Reservation")
                         .WithMany("Loans")
                         .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BiebWebApp.Models.User", "User")
                         .WithMany()

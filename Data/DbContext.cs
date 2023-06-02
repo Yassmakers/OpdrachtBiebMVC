@@ -17,7 +17,6 @@ namespace BiebWebApp.Data
             : base(options)
         {
         }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var passwordHasher = new PasswordHasher<User>();
@@ -86,9 +85,19 @@ namespace BiebWebApp.Data
      .HasOne(l => l.Reservation)
      .WithMany(r => r.Loans)
      .HasForeignKey(l => l.ReservationId)
-     .OnDelete(DeleteBehavior.NoAction);
+     .IsRequired(false) // Set the relationship as optional
+     .OnDelete(DeleteBehavior.NoAction); // Set the delete behavior to set the foreign key to null
+
+            modelBuilder.Entity<Reservation>()
+                .HasMany(r => r.Loans)
+                .WithOne(l => l.Reservation)
+                .IsRequired(false) // Set the relationship as optional
+                .OnDelete(DeleteBehavior.NoAction); // Set the delete behavior to set the foreign key to null
 
 
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.Amount)
+                .HasColumnType("decimal(18,2)");
 
             modelBuilder.Entity<User>().ToTable("Users");
 

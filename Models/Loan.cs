@@ -14,7 +14,7 @@ namespace BiebWebApp.Models
         public virtual User User { get; set; }
         public int ItemId { get; set; }
         public virtual Item Item { get; set; }
-        public int ReservationId { get; set; } // Addded ReservationId property
+        public int? ReservationId { get; set; } // Addded ReservationId property
         public virtual Reservation Reservation { get; set; } // Addded Reservation navigation property
         public DateTime LoanDate { get; set; }
         public DateTime ReturnDate { get; set; }

@@ -173,24 +173,26 @@ namespace BiebWebApp.Controllers
             loan.ReturnDate = DateTime.Now;
 
             var item = loan.Item;
-            if (item != null && item.Status == ItemStatus.Loaned) // Check if the item is currently "Loaned"
+            if (item != null && item.Status == ItemStatus.Loaned)
             {
-                item.Status = ItemStatus.Available; // Set the status of the item to 'Available'
+                item.Status = ItemStatus.Available;
             }
 
-            // Remove the reservation associated with the returned item
-            var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
+            // Retrieve the associated reservation for the returned item
+            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == loan.ReservationId);
             if (reservation != null)
             {
                 _context.Reservations.Remove(reservation);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
 
             TempData["Message"] = "Item returned successfully.";
 
             return RedirectToAction(nameof(Index));
         }
+
+
+
 
 
         // POST: Loans/Delete/5
