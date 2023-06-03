@@ -37,6 +37,8 @@ namespace BiebWebApp.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     HasSubscription = table.Column<bool>(type: "bit", nullable: false),
+                    SubscriptionType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MaxItemsPerYear = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -267,11 +269,11 @@ namespace BiebWebApp.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "HasSubscription", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "Type", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "HasSubscription", "LockoutEnabled", "LockoutEnd", "MaxItemsPerYear", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "SubscriptionType", "TwoFactorEnabled", "Type", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "976e0fad-a598-4113-a43c-4fe51cc99c2b", "johndoe@example.com", false, false, true, null, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAELrLsFjo5W4RkMWTvl7PmOuba3foArZ/w6P8TtitlT37OfiUnQOAiRooD5id27B4VQ==", null, false, "6d6b38f9-9d3a-4f31-9476-8982a20f0a3b", false, 0, "John Doe" },
-                    { 2, 0, "8c58c7ff-d3eb-4ee7-8e2d-46d7f042faa3", "janesmith@example.com", false, false, true, null, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAEOavIsiKX996T2dxOe08Zs5iXoCJZnmYFefthSsuVCl9pudJVfghMpMoXWiRhbX3Ag==", null, false, "c8841063-a292-440e-a68f-fe6ad3fc971c", false, 2, "Jane Smith" }
+                    { 1, 0, "80dad0c4-0a8e-40bb-a0de-b81f5ef23fcb", "johndoe@example.com", false, false, true, null, 0, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAEO+yhwiOm9hsxR3iCd9tUtQwgYHU7WHSRsKzyaph+K4Wuap2DTFSaSZ7WmXJas0/8A==", null, false, "8b6c9bec-6ab7-4585-9a5a-3e4bfebc3d4e", "Basic", false, 0, "John Doe" },
+                    { 2, 0, "4b8f8ef1-069e-4efa-8c80-46ef273a25ed", "janesmith@example.com", false, false, true, null, 0, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAEGjoft3ZYBnWu4+v/+R/e4/0U2R8EZ1tzyjHHT1tYyFdM1jfJpepEFC4Hk+gdOqv4A==", null, false, "c2185c92-90eb-4ed1-b37f-13132ce2c06b", "Top", false, 2, "Jane Smith" }
                 });
 
             migrationBuilder.InsertData(
@@ -296,14 +298,14 @@ namespace BiebWebApp.Migrations
                 columns: new[] { "Id", "ItemId", "ReservationDate", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 2, new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2049), 1 },
-                    { 2, 3, new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2051), 2 }
+                    { 1, 2, new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(532), 1 },
+                    { 2, 3, new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(535), 2 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Loans",
                 columns: new[] { "Id", "ItemId", "LoanDate", "ReservationId", "ReturnDate", "UserId" },
-                values: new object[] { 1, 2, new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(1992), 1, new DateTime(2023, 6, 16, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2025), 1 });
+                values: new object[] { 1, 2, new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(481), 1, new DateTime(2023, 6, 16, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(509), 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

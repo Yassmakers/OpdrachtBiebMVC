@@ -2,7 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace BiebWebApp.Controllers
 {
@@ -17,8 +21,6 @@ namespace BiebWebApp.Controllers
             _userManager = userManager;
             _roleManager = roleManager;
         }
-
-
 
         // GET: Users
         public async Task<IActionResult> Index()
@@ -42,7 +44,9 @@ namespace BiebWebApp.Controllers
         [AllowAnonymous]
         public IActionResult Create()
         {
-            return View("Register");
+            var model = new RegisterModel();
+            model.SubscriptionOptions = GetSubscriptionOptions();
+            return View("Register", model);
         }
 
         // POST: Users/Create
@@ -58,147 +62,75 @@ namespace BiebWebApp.Controllers
                     UserName = model.Email,
                     Name = model.Name,
                     Email = model.Email,
-                    Type = model.Type
+                    Type = model.Type,
+                    SubscriptionType = model.SelectedSubscription, // Set the selected subscription
+                    MaxItemsPerYear = GetMaxItemsPerYear(model.SelectedSubscription) // Set the maximum items per year based on the selected subscription
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    string roleName;
-                    switch (user.Type)
-                    {
-                        case UserType.Member:
-                            roleName = UserType.Member.ToString();
-                            break;
-                        case UserType.Librarian:
-                            roleName = UserType.Librarian.ToString();
-                            break;
-                        case UserType.Administrator:
-                            roleName = UserType.Administrator.ToString();
-                            break;
-                        default:
-                            throw new ArgumentException("Invalid user type");
-                    }
-
-                    if (!await _roleManager.RoleExistsAsync(roleName))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole<int> { Name = roleName });
-                    }
-
-                    await _userManager.AddToRoleAsync(user, roleName);
-
+                    // Process the user creation
                     return RedirectToAction(nameof(Index));
                 }
-
-                foreach (var error in result.Errors)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    AddErrors(result);
                 }
             }
+
+            // Repopulate subscription options in case of validation errors
+            model.SubscriptionOptions = GetSubscriptionOptions();
+            model.MaxItemsPerYear = GetMaxItemsPerYear(model.SelectedSubscription); // Update the MaxItemsPerYear property in the model
 
             return View("Register", model);
         }
 
-
-        // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int id)
+        private List<SelectListItem> GetSubscriptionOptions()
         {
-            var user = await FindUserById(id);
-            if (user == null)
+            return new List<SelectListItem>
             {
-                return NotFound();
-            }
-
-            var model = new EditUserModel
-            {
-                Id = user.Id,
-                Name = user.Name,
-                Type = user.Type
+                new SelectListItem { Value = "None", Text = "No Subscription" },
+                new SelectListItem { Value = "Youth", Text = "Youth Subscription" },
+                new SelectListItem { Value = "Budget", Text = "Budget Subscription" },
+                new SelectListItem { Value = "Basic", Text = "Basic Subscription" },
+                new SelectListItem { Value = "Top", Text = "Top Subscription" }
+                // Add more options if needed
             };
-
-            return View(model);
         }
 
-        // POST: Users/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, EditUserModel model)
+        private int GetMaxItemsPerYear(string subscriptionType)
         {
-            if (id != model.Id)
+            switch (subscriptionType)
             {
-                return NotFound();
+                case "None":
+                    return 0; // No subscription has a maximum of 0 items per year
+                case "Youth":
+                    return int.MaxValue; // Youth subscription has unlimited items per year
+                case "Budget":
+                    return 10; // Budget subscription has a maximum of 10 items per year
+                case "Basic":
+                    return int.MaxValue; // Basic subscription has unlimited items per year
+                case "Top":
+                    return int.MaxValue; // Top subscription has unlimited items per year
+                default:
+                    return 0; // Default to 0 if the subscription type is not recognized
             }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    var existingUser = await FindUserById(id);
-                    if (existingUser == null)
-                    {
-                        return NotFound();
-                    }
-
-                    existingUser.Name = model.Name;
-                    existingUser.Type = model.Type;
-
-                    await _userManager.UpdateAsync(existingUser); // Update the user
-
-                    // Redirect to the details page instead of the index page
-                    return RedirectToAction(nameof(Details), new { id = existingUser.Id });
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(model.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-            }
-
-            return View(model);
         }
 
-
-
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int id)
-        {
-            var user = await FindUserById(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var user = await FindUserById(id);
-            await _userManager.DeleteAsync(user);
-            return RedirectToAction(nameof(Index));
-        }
-
+        // Helper method to find a user by id
         private async Task<User> FindUserById(int id)
         {
             return await _userManager.Users.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-
-
+        // Helper method to check if a user exists
         private bool UserExists(int id)
         {
             return _userManager.Users.Any(e => e.Id == id);
         }
 
+        // Helper method to add errors to the model state
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

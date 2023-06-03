@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace BiebWebApp.Models
 {
@@ -13,13 +15,20 @@ namespace BiebWebApp.Models
         [Required]
         public UserType Type { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "The Password field is required.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "The Confirm Password field is required.")]
         [DataType(DataType.Password)]
+        [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
+
+        [Required(ErrorMessage = "The Subscription field is required.")]
+        public string SelectedSubscription { get; set; }
+
+        public List<SelectListItem> SubscriptionOptions { get; set; }
+        public int MaxItemsPerYear { get; set; }
     }
 }

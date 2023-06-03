@@ -8,7 +8,8 @@ namespace BiebWebApp.Models
         public User User { get; set; }
         public List<Reservation> Reservations { get; set; }
         public List<Loan> Loans { get; set; } // Add a list of Loans
-
+        public decimal ReservationFine { get; set; }
+        public decimal ReservationCharge { get; set; }
         public bool HasSubscription { get; set; } // subscribit
     }
 }

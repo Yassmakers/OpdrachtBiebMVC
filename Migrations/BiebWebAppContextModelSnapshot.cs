@@ -226,9 +226,9 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            LoanDate = new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(1992),
+                            LoanDate = new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(481),
                             ReservationId = 1,
-                            ReturnDate = new DateTime(2023, 6, 16, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2025),
+                            ReturnDate = new DateTime(2023, 6, 16, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(509),
                             UserId = 1
                         });
                 });
@@ -263,14 +263,14 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            ReservationDate = new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2049),
+                            ReservationDate = new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(532),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
                             ItemId = 3,
-                            ReservationDate = new DateTime(2023, 5, 26, 21, 28, 35, 241, DateTimeKind.Local).AddTicks(2051),
+                            ReservationDate = new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(535),
                             UserId = 2
                         });
                 });
@@ -306,6 +306,9 @@ namespace BiebWebApp.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<int>("MaxItemsPerYear")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -328,6 +331,10 @@ namespace BiebWebApp.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubscriptionType")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -357,17 +364,19 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "976e0fad-a598-4113-a43c-4fe51cc99c2b",
+                            ConcurrencyStamp = "80dad0c4-0a8e-40bb-a0de-b81f5ef23fcb",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
                             LockoutEnabled = true,
+                            MaxItemsPerYear = 0,
                             Name = "John Doe",
                             NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
                             NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAELrLsFjo5W4RkMWTvl7PmOuba3foArZ/w6P8TtitlT37OfiUnQOAiRooD5id27B4VQ==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEO+yhwiOm9hsxR3iCd9tUtQwgYHU7WHSRsKzyaph+K4Wuap2DTFSaSZ7WmXJas0/8A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "6d6b38f9-9d3a-4f31-9476-8982a20f0a3b",
+                            SecurityStamp = "8b6c9bec-6ab7-4585-9a5a-3e4bfebc3d4e",
+                            SubscriptionType = "Basic",
                             TwoFactorEnabled = false,
                             Type = 0,
                             UserName = "John Doe"
@@ -376,17 +385,19 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "8c58c7ff-d3eb-4ee7-8e2d-46d7f042faa3",
+                            ConcurrencyStamp = "4b8f8ef1-069e-4efa-8c80-46ef273a25ed",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
                             LockoutEnabled = true,
+                            MaxItemsPerYear = 0,
                             Name = "Jane Smith",
                             NormalizedEmail = "JANESMITH@EXAMPLE.COM",
                             NormalizedUserName = "JANESMITH@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEOavIsiKX996T2dxOe08Zs5iXoCJZnmYFefthSsuVCl9pudJVfghMpMoXWiRhbX3Ag==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEGjoft3ZYBnWu4+v/+R/e4/0U2R8EZ1tzyjHHT1tYyFdM1jfJpepEFC4Hk+gdOqv4A==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c8841063-a292-440e-a68f-fe6ad3fc971c",
+                            SecurityStamp = "c2185c92-90eb-4ed1-b37f-13132ce2c06b",
+                            SubscriptionType = "Top",
                             TwoFactorEnabled = false,
                             Type = 2,
                             UserName = "Jane Smith"
@@ -551,7 +562,7 @@ namespace BiebWebApp.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BiebWebApp.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Loans")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -647,6 +658,8 @@ namespace BiebWebApp.Migrations
 
             modelBuilder.Entity("BiebWebApp.Models.User", b =>
                 {
+                    b.Navigation("Loans");
+
                     b.Navigation("Reservations");
                 });
 #pragma warning restore 612, 618

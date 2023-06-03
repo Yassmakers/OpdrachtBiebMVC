@@ -50,23 +50,62 @@ namespace BiebWebApp.Controllers
             var loans = _context.Loans
                 .Include(l => l.User)
                 .Include(l => l.Item)
-                .Where(l => l.UserId == user.Id && l.ReturnDate < DateTime.Now) // Fetch loans with return dates in the past
+                .Where(l => l.UserId == user.Id && l.ReturnDate < DateTime.Now)
                 .ToList();
 
-            var hasSubscription = user.HasSubscription; // Retrieve the subscription status
+            var hasSubscription = user.HasSubscription;
 
             var model = new ProfileViewModel
             {
                 User = user,
                 Reservations = reservations ?? new List<Reservation>(),
-                Loans = loans ?? new List<Loan>(), // Assign the list of loans to the model
-                HasSubscription = hasSubscription // Set the subscription status in the view model
+                Loans = loans ?? new List<Loan>(),
+                HasSubscription = hasSubscription
             };
 
-            ViewBag.HasSubscription = hasSubscription; // Set the subscription status in the ViewBag
+            // Set the fine and charges based on the user's subscription
+            model.ReservationFine = GetReservationFine(user.SubscriptionType);
+            model.ReservationCharge = GetReservationCharge(user.SubscriptionType);
+
+            ViewBag.HasSubscription = hasSubscription;
 
             return View(model);
         }
+
+        private decimal GetReservationFine(string subscriptionType)
+        {
+            switch (subscriptionType)
+            {
+                case "Youth":
+                    return 0.25m;
+                case "Budget":
+                    return 0.30m;
+                case "Basic":
+                    return 0.30m;
+                case "Top":
+                    return 0.30m;
+                default:
+                    return 0.00m;
+            }
+        }
+
+        private decimal GetReservationCharge(string subscriptionType)
+        {
+            switch (subscriptionType)
+            {
+                case "Youth":
+                    return 0.00m;
+                case "Budget":
+                    return 1.00m;
+                case "Basic":
+                    return 4.00m;
+                case "Top":
+                    return 6.00m;
+                default:
+                    return 0.00m;
+            }
+        }
+
 
 
 
@@ -303,6 +342,7 @@ namespace BiebWebApp.Controllers
         {
             return View();
         }
+
 
         public IActionResult Register()
         {

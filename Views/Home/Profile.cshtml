@@ -82,3 +82,10 @@ else
         <button type="submit" class="btn btn-primary">Subscribe</button>
     </form>
 }
+
+<h4>Fine and Charges</h4>
+@if (Model.HasSubscription)
+{
+    <p>Reservation Fine: @Model.ReservationFine</p>
+    <p>Reservation Charge: @Model.ReservationCharge</p>
+}
