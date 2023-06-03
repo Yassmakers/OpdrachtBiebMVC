@@ -31,7 +31,8 @@ namespace BiebWebApp.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _roleManager = roleManager;
-            }
+        }
+
         [HttpGet("profile")]
         public IActionResult Profile()
         {
@@ -41,6 +42,11 @@ namespace BiebWebApp.Controllers
             if (user == null)
             {
                 return NotFound();
+            }
+
+            if (user.IsBlocked)
+            {
+                return RedirectToAction(nameof(Logout));
             }
 
             var reservations = _context.Reservations
@@ -86,6 +92,8 @@ namespace BiebWebApp.Controllers
 
             return View(model);
         }
+
+
 
 
 
@@ -290,6 +298,11 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
+            if (user.IsBlocked)
+            {
+                return RedirectToAction(nameof(Logout));
+            }
+
             // Check if the user has already reserved the item
             var existingReservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id && r.UserId == user.Id);
             if (existingReservation != null)
@@ -334,7 +347,7 @@ namespace BiebWebApp.Controllers
             return RedirectToAction(nameof(Profile));
         }
 
-
+       
 
         [Authorize]
         [HttpPost]

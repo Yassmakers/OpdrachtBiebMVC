@@ -15,7 +15,6 @@ namespace BiebWebApp.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
-
         private readonly ILogger<UsersController> _logger;
 
         public UsersController(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, ILogger<UsersController> logger)
@@ -25,11 +24,11 @@ namespace BiebWebApp.Controllers
             _logger = logger;
         }
 
-
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await _userManager.Users.ToListAsync());
+            var users = await _userManager.Users.ToListAsync();
+            return View(users);
         }
 
         // GET: Users/Details/5
@@ -58,34 +57,31 @@ namespace BiebWebApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Create(RegisterModel model)
         {
-            var user = new User
+            if (ModelState.IsValid)
             {
-                UserName = model.Email,
-                Name = model.Name,
-                Email = model.Email,
-                Type = model.Type,
-                SubscriptionType = model.SelectedSubscription.ToString(), // Set the selected subscription
-            };
+                var user = new User
+                {
+                    UserName = model.Email,
+                    Name = model.Name,
+                    Email = model.Email,
+                    Type = model.Type,
+                    SubscriptionType = model.SelectedSubscription.ToString(),
+                    IsBlocked = false
+                };
 
-            var result = await _userManager.CreateAsync(user, model.Password);
-            if (result.Succeeded)
-            {
-                // Process the user creation
-                return RedirectToAction(nameof(Index));
-            }
-            else
-            {
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
                 AddErrors(result);
             }
 
-            // Repopulate subscription options in case of validation errors
             model.SubscriptionOptions = GetSubscriptionOptions();
-
             return View("Register", model);
         }
 
-        // GET: Users/Edit/5
-        // GET: Users/Edit/5
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
@@ -100,8 +96,9 @@ namespace BiebWebApp.Controllers
                 Id = user.Id,
                 Name = user.Name,
                 Type = user.Type,
-                SubscriptionType = user.SubscriptionType, // Set the SubscriptionType property
-                SubscriptionOptions = GetSubscriptionOptions() // Populate the SubscriptionOptions list
+                SubscriptionType = user.SubscriptionType,
+                SubscriptionOptions = GetSubscriptionOptions(),
+                IsBlocked = user.IsBlocked
             };
 
             return View(model);
@@ -118,16 +115,12 @@ namespace BiebWebApp.Controllers
 
             if (!ModelState.IsValid)
             {
-                _logger.LogError("Model state is not valid.");
-                _logger.LogError(string.Join("; ", ModelState.Values
-                                                .SelectMany(state => state.Errors)
-                                                .Select(error => error.ErrorMessage)));
+                return View(model);
             }
 
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
-                _logger.LogError($"User with ID {id} not found.");
                 return NotFound();
             }
 
@@ -135,49 +128,66 @@ namespace BiebWebApp.Controllers
             user.Type = model.Type;
             user.SubscriptionType = model.SubscriptionType;
 
-            if (!string.IsNullOrEmpty(model.NewPassword))
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
             {
-                var passwordValidator = new PasswordValidator<User>();
-                var result = await passwordValidator.ValidateAsync(_userManager, user, model.NewPassword);
-                if (!result.Succeeded)
-                {
-                    _logger.LogError("Password validation failed: {0}", string.Join("; ", result.Errors.Select(e => e.Description)));
-                    AddErrors(result);
-                    model.SubscriptionOptions = GetSubscriptionOptions();
-                    return View(model);
-                }
-
-                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.NewPassword);
+                return RedirectToAction(nameof(Index));
             }
 
-            var updateResult = await _userManager.UpdateAsync(user);
-            if (!updateResult.Succeeded)
-            {
-                _logger.LogError("Failed to update user: {0}", string.Join("; ", updateResult.Errors.Select(e => e.Description)));
-                AddErrors(updateResult);
-            }
-
-            if (updateResult.Succeeded)
-            {
-                return RedirectToAction(nameof(Details), new { id = user.Id });
-            }
-
-            model.SubscriptionOptions = GetSubscriptionOptions();
+            AddErrors(result);
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Block(int id)
+        {
+            var user = await FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
+            user.IsBlocked = true;
 
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "User blocked successfully.";
+            }
+            else
+            {
+                AddErrors(result);
+            }
 
-        // ...
+            return RedirectToAction(nameof(Index));
+        }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Unblock(int id)
+        {
+            var user = await FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
+            user.IsBlocked = false;
 
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "User unblocked successfully.";
+            }
+            else
+            {
+                AddErrors(result);
+            }
 
-        // GET: Users/Delete/5
-        // GET: Users/Delete/5
-        // GET: Users/Delete/5
-        // GET: Users/Delete/5
+            return RedirectToAction(nameof(Index));
+        }
+
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
@@ -187,7 +197,6 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
-            ViewBag.UserId = id;
             return View(user);
         }
 
@@ -207,19 +216,10 @@ namespace BiebWebApp.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-            else
-            {
-                AddErrors(result);
-                return RedirectToAction(nameof(Delete), new { id = user.Id });
-            }
+
+            AddErrors(result);
+            return View(user);
         }
-
-
-
-
-
-
-
 
         private List<SelectListItem> GetSubscriptionOptions()
         {
@@ -230,23 +230,14 @@ namespace BiebWebApp.Controllers
                 new SelectListItem { Value = "2", Text = "Budget Subscription" },
                 new SelectListItem { Value = "3", Text = "Basic Subscription" },
                 new SelectListItem { Value = "4", Text = "Top Subscription" }
-                // Add more options if needed
             };
         }
 
-        // Helper method to find a user by id
         private async Task<User> FindUserById(int id)
         {
             return await _userManager.Users.FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        // Helper method to check if a user exists
-        private bool UserExists(int id)
-        {
-            return _userManager.Users.Any(e => e.Id == id);
-        }
-
-        // Helper method to add errors to the model state
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

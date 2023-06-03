@@ -13,6 +13,7 @@ namespace BiebWebApp.Models
         public UserType Type { get; set; } // UserType enum
         public virtual ICollection<Reservation> Reservations { get; set; }
         public virtual ICollection<Loan> Loans { get; set; }
+        public bool IsBlocked { get; set; }
         public bool HasSubscription { get; set; }
         public string SubscriptionType { get; set; } // Added subscription type field
         public int MaxItemsPerYear { get; set; } // Added maximum items per year field

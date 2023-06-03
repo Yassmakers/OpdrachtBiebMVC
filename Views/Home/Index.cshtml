@@ -15,7 +15,7 @@
     <title>@ViewData["Title"] - BiebWebApp</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-DmY81eYEhaI6FYdMUe0Iy1fDHTJvScbLytlx4xk8fOTPHh4+EaU4w+quDk9t4W2J" crossorigin="anonymous">
     <style>
-        .extra-info {   
+        .extra-info {
             display: none;
         }
 
@@ -33,16 +33,32 @@
 
     @if (User.Identity.IsAuthenticated)
     {
-        <div class="text-center">
-            <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
-            <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-        </div>
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = _userManager.FindByIdAsync(userId).Result;
 
-
-        @if (TempData["Message"] != null)
+        if (user != null && !user.IsBlocked)
         {
-            <div class="alert alert-success">
-                @TempData["Message"]
+            <div class="text-center">
+                <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
+                <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+            </div>
+
+
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Message"]
+                </div>
+            }
+        }
+        else
+        {
+            <div class="text-center">
+                <h1 class="display-4">Welcome, please log in</h1>
+                <p>
+                    <a href="@Url.Action("Login", "Home")">Login</a> or
+                    <a href="@Url.Action("Register", "Home")">Register</a>
+                </p>
             </div>
         }
     }
@@ -115,7 +131,7 @@
                     <th>Type</th>
                     <th>Year</th>
                     <th>Location</th>
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity.IsAuthenticated && user != null && !user.IsBlocked)
                     {
                         <th>Action</th>
                     }
@@ -130,7 +146,7 @@
                         <td>@item.ItemType</td>
                         <td>@item.Year</td>
                         <td>@item.Location</td>
-                        @if (User.Identity.IsAuthenticated)
+                        @if (User.Identity.IsAuthenticated && user != null && !user.IsBlocked)
                         {
                             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

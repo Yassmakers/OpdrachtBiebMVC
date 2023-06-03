@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<BiebWebApp.Models.User>
 
+
 <h1>Users</h1>
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New User</a>
@@ -11,6 +12,7 @@
             <th>Id</th>
             <th>Name</th>
             <th>Type</th>
+            <th>Actions</th>
             <th></th>
         </tr>
     </thead>
@@ -21,6 +23,20 @@
                 <td>@item.Id</td>
                 <td>@item.Name</td>
                 <td>@item.Type</td>
+                <td>
+                    @if (item.IsBlocked)
+                    {
+                        <form asp-action="Unblock" asp-route-id="@item.Id" method="post">
+                            <button type="submit" class="btn btn-warning">Unblock</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <form asp-action="Block" asp-route-id="@item.Id" method="post">
+                            <button type="submit" class="btn btn-danger">Block</button>
+                        </form>
+                    }
+                </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |

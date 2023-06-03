@@ -183,14 +183,14 @@ namespace BiebWebApp.Controllers
             if (reservation != null)
             {
                 _context.Reservations.Remove(reservation);
-                await _context.SaveChangesAsync();
             }
+
+            await _context.SaveChangesAsync();
 
             TempData["Message"] = "Item returned successfully.";
 
             return RedirectToAction(nameof(Index));
         }
-
 
 
 

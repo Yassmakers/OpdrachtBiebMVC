@@ -22,40 +22,42 @@ namespace BiebWebApp.Data
             var passwordHasher = new PasswordHasher<User>();
 
             modelBuilder.Entity<User>()
-     .HasData(
-         new User
-         {
-             Id = 1,
-             UserName = "John Doe",
-             Name = "John Doe",
-             Email = "johndoe@example.com",
-             NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
-             NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
-             EmailConfirmed = false,
-             LockoutEnabled = true,
-             SecurityStamp = Guid.NewGuid().ToString("D"),
-             ConcurrencyStamp = Guid.NewGuid().ToString("D"),
-             Type = UserType.Member,
-             SubscriptionType = "Basic", // Provide the subscription type for the user
-             PasswordHash = passwordHasher.HashPassword(null, "YourDesiredPasswordHere")
-         },
-         new User
-         {
-             Id = 2,
-             UserName = "Jane Smith",
-             Name = "Jane Smith",
-             Email = "janesmith@example.com",
-             NormalizedUserName = "JANESMITH@EXAMPLE.COM",
-             NormalizedEmail = "JANESMITH@EXAMPLE.COM",
-             EmailConfirmed = false,
-             LockoutEnabled = true,
-             SecurityStamp = Guid.NewGuid().ToString("D"),
-             ConcurrencyStamp = Guid.NewGuid().ToString("D"),
-             Type = UserType.Administrator,
-             SubscriptionType = "Top", // Provide the subscription type for the user
-             PasswordHash = passwordHasher.HashPassword(null, "YourDesiredPasswordHere")
-         }
-     );
+                .HasData(
+                    new User
+                    {
+                        Id = 1,
+                        UserName = "John Doe",
+                        Name = "John Doe",
+                        Email = "johndoe@example.com",
+                        NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
+                        NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
+                        EmailConfirmed = false,
+                        LockoutEnabled = true,
+                        SecurityStamp = Guid.NewGuid().ToString("D"),
+                        ConcurrencyStamp = Guid.NewGuid().ToString("D"),
+                        Type = UserType.Member,
+                        SubscriptionType = "Basic",
+                        PasswordHash = passwordHasher.HashPassword(null, "YourDesiredPasswordHere"),
+                        IsBlocked = false // Set the IsBlocked property to false
+                    },
+                    new User
+                    {
+                        Id = 2,
+                        UserName = "Jane Smith",
+                        Name = "Jane Smith",
+                        Email = "janesmith@example.com",
+                        NormalizedUserName = "JANESMITH@EXAMPLE.COM",
+                        NormalizedEmail = "JANESMITH@EXAMPLE.COM",
+                        EmailConfirmed = false,
+                        LockoutEnabled = true,
+                        SecurityStamp = Guid.NewGuid().ToString("D"),
+                        ConcurrencyStamp = Guid.NewGuid().ToString("D"),
+                        Type = UserType.Administrator,
+                        SubscriptionType = "Top",
+                        PasswordHash = passwordHasher.HashPassword(null, "YourDesiredPasswordHere"),
+                        IsBlocked = false // Set the IsBlocked property to false
+                    }
+                );
 
             modelBuilder.Entity<Item>()
                 .Property(i => i.Status)

@@ -2,6 +2,22 @@
 
 <h1>Details</h1>
 
+@if (User.IsInRole("Admin"))
+{
+    @if (Model.IsBlocked)
+    {
+                <form asp-action="BlockAccount" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-success">Unblock Account</button>
+                </form>
+    }
+    else
+    {
+                <form asp-action="BlockAccount" asp-route-id="@Model.Id" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Block Account</button>
+                </form>
+    }
+}
+
 <div>
     <h4>User</h4>
     <hr />
