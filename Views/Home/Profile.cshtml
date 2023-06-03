@@ -50,7 +50,7 @@ else
 
 @if (Model != null && Model.User != null && Model.User.Loans != null && Model.User.Loans.Count > 0)
 {
-    <h5>Old Borrowed Items History</h5>
+    <h5>Items Borrowed History</h5>
     <ul>
         @foreach (var loan in Model.User.Loans)
         {
@@ -59,29 +59,37 @@ else
     </ul>
 }
 
-
 @if (TempData["Message"] != null)
 {
     <div class="message success">@TempData["Message"]</div>
 }
 
 
-<<h4>Subscription</h4>
+
 @if (Model != null && Model.SubscriptionType != null)
 {
-    <p>Subscription: @Model.SubscriptionType</p>
-    <p>If you want to upgrade your subscription, please visit a librarian at your local library.</p>
+    <h4>Subscription</h4>
+    <p>Subscription Type: @Model.SubscriptionType</p>
+        <p>If you want to upgrade your subscription, please visit a librarian at your local library.</p>
+
+    @if (Model.SubscriptionCharge > 0)
+    {
+        <p>Subscription Fee Monthly: @Model.SubscriptionCharge</p>
+    }
+}
+
+<h4>Reservation Charges</h4>
+@if (Model.TotalReservationCharge > 0)
+{
+    <p>Total Reservation Charge: @Model.TotalReservationCharge</p>
+}
+
+<h4>Fines</h4>
+@if (Model != null && Model.FinePerDay > 0)
+{
+    <p>Fine Per Day: @Model.FinePerDay</p>
 }
 else
 {
-    <p>No subscription found.</p>
-}
-
-
-
-<h4>Fine and Charges</h4>
-@if (Model.HasSubscription)
-{
-    <p>Reservation Fine: @Model.ReservationFine</p>
-    <p>Reservation Charge: @Model.ReservationCharge</p>
+    <p>No fines yet.</p>
 }

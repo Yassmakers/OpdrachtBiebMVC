@@ -60,23 +60,37 @@ namespace BiebWebApp.Controllers
             var hasSubscription = user.HasSubscription;
             var subscriptionType = GetSubscriptionTypeName(user.SubscriptionType); // Get the subscription type name
 
+            var reservationFine = GetReservationFine(user.SubscriptionType);
+            var reservationCharge = GetReservationCharge(user.SubscriptionType);
+            _logger.LogInformation($"Reservation Fine: {reservationFine}, Reservation Charge: {reservationCharge}");
+
+            var subscriptionCharge = GetSubscriptionCharge(user.SubscriptionType);
+            _logger.LogInformation($"Subscription Charge: {subscriptionCharge}");
+
+            var totalReservationCharge = reservations.Count * reservationCharge; // Calculate the total reservation charge
+
             var model = new ProfileViewModel
             {
                 User = user,
                 Reservations = reservations ?? new List<Reservation>(),
                 Loans = loans ?? new List<Loan>(),
                 HasSubscription = hasSubscription,
-                SubscriptionType = subscriptionType // Set the subscription type property
+                SubscriptionType = subscriptionType, // Set the subscription type property
+                ReservationFine = reservationFine, // Set the reservation fine property
+                ReservationCharge = reservationCharge, // Set the reservation charge property
+                SubscriptionCharge = subscriptionCharge,
+                TotalReservationCharge = totalReservationCharge // Set the total reservation charge property
             };
-
-            // Set the fine and charges based on the user's subscription
-            model.ReservationFine = GetReservationFine(user.SubscriptionType);
-            model.ReservationCharge = GetReservationCharge(user.SubscriptionType);
 
             ViewBag.HasSubscription = hasSubscription;
 
             return View(model);
         }
+
+
+
+
+
 
         public string GetSubscriptionTypeName(string subscriptionType)
         {
@@ -96,40 +110,71 @@ namespace BiebWebApp.Controllers
         }
 
 
+        private decimal GetSubscriptionCharge(string subscriptionType)
+        {
+            if (int.TryParse(subscriptionType, out int type))
+            {
+                switch (type)
+                {
+                    case 1:
+                        return 0.00m;
+                    case 2:
+                        return 1.00m;
+                    case 3:
+                        return 4.00m;
+                    case 4:
+                        return 6.00m;
+                    default:
+                        return 0.00m;
+                }
+            }
+
+            return 0.00m;
+        }
 
         private decimal GetReservationFine(string subscriptionType)
         {
-            switch (subscriptionType)
+            if (int.TryParse(subscriptionType, out int type))
             {
-                case "Youth":
-                    return 0.25m;
-                case "Budget":
-                    return 0.30m;
-                case "Basic":
-                    return 0.30m;
-                case "Top":
-                    return 0.30m;
-                default:
-                    return 0.00m;
+                switch (type)
+                {
+                    case 1:
+                        return 0.25m;
+                    case 2:
+                    case 3:
+                    case 4:
+                        return 0.30m;
+                    default:
+                        return 0.00m;
+                }
             }
+
+            return 0.00m;
         }
 
         private decimal GetReservationCharge(string subscriptionType)
         {
-            switch (subscriptionType)
+            if (int.TryParse(subscriptionType, out int type))
             {
-                case "Youth":
-                    return 0.00m;
-                case "Budget":
-                    return 1.00m;
-                case "Basic":
-                    return 4.00m;
-                case "Top":
-                    return 6.00m;
-                default:
-                    return 0.00m;
+                switch (type)
+                {
+                    case 1:
+                        return 0.25m;
+                    case 2:
+                        return .25m;
+                    case 3:
+                        return 0.25m;
+                    case 4:
+                        return 0.00m;
+                    default:
+                        return 0.00m;
+                }
             }
+
+            return 0.00m;
         }
+
+
 
 
 
@@ -215,6 +260,7 @@ namespace BiebWebApp.Controllers
 
             return View(items);
         }
+
 
 
 

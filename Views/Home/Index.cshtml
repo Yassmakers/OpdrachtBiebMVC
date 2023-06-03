@@ -15,7 +15,7 @@
     <title>@ViewData["Title"] - BiebWebApp</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-DmY81eYEhaI6FYdMUe0Iy1fDHTJvScbLytlx4xk8fOTPHh4+EaU4w+quDk9t4W2J" crossorigin="anonymous">
     <style>
-        .extra-info {
+        .extra-info {   
             display: none;
         }
 
@@ -115,7 +115,10 @@
                     <th>Type</th>
                     <th>Year</th>
                     <th>Location</th>
-                    <th>Action</th>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <th>Action</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -127,17 +130,17 @@
                         <td>@item.ItemType</td>
                         <td>@item.Year</td>
                         <td>@item.Location</td>
-                        <td>
-                            @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
-                            {
-                                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-                                var reservation = item.Reservations?.FirstOrDefault(r => r.UserId.ToString() == userId);
-                                var hasReserved = reservation != null;
+                            var reservation = item.Reservations?.FirstOrDefault(r => r.UserId.ToString() == userId);
+                            var hasReserved = reservation != null;
+                            var loaned = reservation?.Loans?.Any(l => l.ItemId == item.Id && l.UserId.ToString() == userId);
 
-                                if (hasReserved)
+                            <td>
+                                @if (hasReserved)
                                 {
-                                    var loaned = reservation.Loans?.Any(l => l.ItemId == item.Id && l.UserId.ToString() == userId);
                                     if (loaned.HasValue && loaned.Value)
                                     {
                                         <button class="btn btn-secondary btn-sm" disabled>Loaned</button>
@@ -147,32 +150,20 @@
                                         <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Home")?id=@reservation.Id">Loan</a>
                                     }
                                 }
+                                else if (item.Status == ItemStatus.Reserved)
+                                {
+                                    <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
+                                }
+                                else if (item.Status == ItemStatus.Loaned)
+                                {
+                                    <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
+                                }
                                 else
                                 {
-                                    if (item.Status == ItemStatus.Reserved)
-                                    {
-                                        <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
-                                    }
-                                    else if (item.Status == ItemStatus.Loaned)
-                                    {
-                                        <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
-                                    }
-                                    else if (ViewBag.HasSubscription)
-                                    {
-                                        <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
-                                    }
-                                    else
-                                    {
-                                        <button class="btn btn-primary btn-sm" disabled>No Subscription</button>
-                                    }
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
                                 }
-                            }
-                            else
-                            {
-                                <button class="btn btn-primary btn-sm" disabled>Login to Reserve</button>
-                            }
-
-                        </td>
+                            </td>
+                        }
                     </tr>
                     <tr class="extra-info">
                         <td colspan="6">
