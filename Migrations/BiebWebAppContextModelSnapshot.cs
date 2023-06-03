@@ -226,9 +226,9 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            LoanDate = new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(481),
+                            LoanDate = new DateTime(2023, 5, 27, 17, 1, 23, 530, DateTimeKind.Local).AddTicks(1277),
                             ReservationId = 1,
-                            ReturnDate = new DateTime(2023, 6, 16, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(509),
+                            ReturnDate = new DateTime(2023, 6, 17, 17, 1, 23, 530, DateTimeKind.Local).AddTicks(1308),
                             UserId = 1
                         });
                 });
@@ -263,14 +263,14 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             ItemId = 2,
-                            ReservationDate = new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(532),
+                            ReservationDate = new DateTime(2023, 5, 27, 17, 1, 23, 530, DateTimeKind.Local).AddTicks(1328),
                             UserId = 1
                         },
                         new
                         {
                             Id = 2,
                             ItemId = 3,
-                            ReservationDate = new DateTime(2023, 5, 26, 22, 43, 15, 586, DateTimeKind.Local).AddTicks(535),
+                            ReservationDate = new DateTime(2023, 5, 27, 17, 1, 23, 530, DateTimeKind.Local).AddTicks(1330),
                             UserId = 2
                         });
                 });
@@ -364,7 +364,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 1,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "80dad0c4-0a8e-40bb-a0de-b81f5ef23fcb",
+                            ConcurrencyStamp = "e884bf51-6a16-4b03-96ee-cb7f4d7ac7e6",
                             Email = "johndoe@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
@@ -373,9 +373,9 @@ namespace BiebWebApp.Migrations
                             Name = "John Doe",
                             NormalizedEmail = "JOHNDOE@EXAMPLE.COM",
                             NormalizedUserName = "JOHNDOE@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEO+yhwiOm9hsxR3iCd9tUtQwgYHU7WHSRsKzyaph+K4Wuap2DTFSaSZ7WmXJas0/8A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAECzvlrQiejmvoLZUZmDIKgOgxyxGRz57HV4cPv+Oek0gMSQKFmCet1xno/ZuOxGm5Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "8b6c9bec-6ab7-4585-9a5a-3e4bfebc3d4e",
+                            SecurityStamp = "02d626a4-e969-4a0e-9a7a-7bbb33eb56c6",
                             SubscriptionType = "Basic",
                             TwoFactorEnabled = false,
                             Type = 0,
@@ -385,7 +385,7 @@ namespace BiebWebApp.Migrations
                         {
                             Id = 2,
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "4b8f8ef1-069e-4efa-8c80-46ef273a25ed",
+                            ConcurrencyStamp = "d6a048d7-c3e3-4772-9a75-d049e0327a8c",
                             Email = "janesmith@example.com",
                             EmailConfirmed = false,
                             HasSubscription = false,
@@ -394,9 +394,9 @@ namespace BiebWebApp.Migrations
                             Name = "Jane Smith",
                             NormalizedEmail = "JANESMITH@EXAMPLE.COM",
                             NormalizedUserName = "JANESMITH@EXAMPLE.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEGjoft3ZYBnWu4+v/+R/e4/0U2R8EZ1tzyjHHT1tYyFdM1jfJpepEFC4Hk+gdOqv4A==",
+                            PasswordHash = "AQAAAAEAACcQAAAAEA3LrdFy9OZEiVFhC1XlwOXVJVZPk36YRhWFTWWuFNg1W//OuLzRjeqcVZ8kXzh9nA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c2185c92-90eb-4ed1-b37f-13132ce2c06b",
+                            SecurityStamp = "bd5c350e-9819-4b46-aadb-ae00b8a20e09",
                             SubscriptionType = "Top",
                             TwoFactorEnabled = false,
                             Type = 2,

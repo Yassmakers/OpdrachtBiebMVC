@@ -25,10 +25,8 @@ namespace BiebWebApp.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; }
 
-        [Required(ErrorMessage = "The Subscription field is required.")]
-        public string SelectedSubscription { get; set; }
+        public int SelectedSubscription { get; set; }
 
         public List<SelectListItem> SubscriptionOptions { get; set; }
-        public int MaxItemsPerYear { get; set; }
     }
 }

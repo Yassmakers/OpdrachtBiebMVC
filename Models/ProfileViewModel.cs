@@ -11,5 +11,7 @@ namespace BiebWebApp.Models
         public decimal ReservationFine { get; set; }
         public decimal ReservationCharge { get; set; }
         public bool HasSubscription { get; set; } // subscribit
+
+        public string SubscriptionType { get; set; } // Add this property to store the subscription type
     }
 }

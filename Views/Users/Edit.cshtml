@@ -1,19 +1,48 @@
 ﻿@model BiebWebApp.Models.EditUserModel
 
-<h1>Edit User</h1>
+<h2>Edit User</h2>
 
-<form method="post">
-    <input type="hidden" asp-for="Id" />
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
 
     <div class="form-group">
-        <label asp-for="Name" class="control-label"></label>
-        <input asp-for="Name" class="form-control" />
+        @Html.LabelFor(m => m.Name)
+        @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
     </div>
+
     <div class="form-group">
-        <label asp-for="Type" class="control-label"></label>
-        <select asp-for="Type" asp-items="Html.GetEnumSelectList<BiebWebApp.Models.UserType>()"></select>
+        @Html.LabelFor(m => m.Type)
+        @Html.DropDownListFor(m => m.Type, Enum.GetValues(typeof(UserType)).Cast<UserType>().Select(x => new SelectListItem
+    {
+    Text = x.ToString(),
+    Value = ((int)x).ToString(),
+    Selected = (Model.Type == x)
+    }), "Select Type", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Type, "", new { @class = "text-danger" })
     </div>
+
     <div class="form-group">
-        <input type="submit" value="Save" class="btn btn-primary" />
+        @Html.LabelFor(m => m.SubscriptionType)
+        @Html.DropDownListFor(m => m.SubscriptionType, new SelectList(Model.SubscriptionOptions, "Value", "Text", Model.SubscriptionType), "Select Subscription", new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.SubscriptionType, "", new { @class = "text-danger" })
     </div>
-</form>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.NewPassword)
+        @Html.PasswordFor(m => m.NewPassword, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.NewPassword, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.ConfirmNewPassword)
+        @Html.PasswordFor(m => m.ConfirmNewPassword, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.ConfirmNewPassword, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Save</button>
+        @Html.ActionLink("Cancel", "Details", new { id = Model.Id }, new { @class = "btn btn-secondary" })
+    </div>
+}

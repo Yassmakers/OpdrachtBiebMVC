@@ -49,73 +49,159 @@ namespace BiebWebApp.Controllers
             return View("Register", model);
         }
 
-        // POST: Users/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
         public async Task<IActionResult> Create(RegisterModel model)
         {
-            if (ModelState.IsValid)
+            var user = new User
             {
-                var user = new User
-                {
-                    UserName = model.Email,
-                    Name = model.Name,
-                    Email = model.Email,
-                    Type = model.Type,
-                    SubscriptionType = model.SelectedSubscription, // Set the selected subscription
-                    MaxItemsPerYear = GetMaxItemsPerYear(model.SelectedSubscription) // Set the maximum items per year based on the selected subscription
-                };
+                UserName = model.Email,
+                Name = model.Name,
+                Email = model.Email,
+                Type = model.Type,
+                SubscriptionType = model.SelectedSubscription.ToString(), // Set the selected subscription
+            };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    // Process the user creation
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    AddErrors(result);
-                }
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                // Process the user creation
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                AddErrors(result);
             }
 
             // Repopulate subscription options in case of validation errors
             model.SubscriptionOptions = GetSubscriptionOptions();
-            model.MaxItemsPerYear = GetMaxItemsPerYear(model.SelectedSubscription); // Update the MaxItemsPerYear property in the model
 
             return View("Register", model);
+        }
+
+        // GET: Users/Edit/5
+        // GET: Users/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var user = await FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var model = new EditUserModel
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Type = user.Type,
+                SubscriptionType = user.SubscriptionType, // Set the SubscriptionType property
+                SubscriptionOptions = GetSubscriptionOptions() // Populate the SubscriptionOptions list
+            };
+
+            return View(model);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditUserModel model)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var user = await FindUserById(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                user.Name = model.Name;
+                user.Type = model.Type;
+                user.SubscriptionType = model.SubscriptionType;
+
+                if (!string.IsNullOrEmpty(model.NewPassword))
+                {
+                    var passwordValidator = new PasswordValidator<User>();
+                    var result = await passwordValidator.ValidateAsync(_userManager, user, model.NewPassword);
+                    if (result.Succeeded)
+                    {
+                        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.NewPassword);
+                    }
+                    else
+                    {
+                        AddErrors(result);
+                        model.SubscriptionOptions = GetSubscriptionOptions();
+                        return View(model);
+                    }
+                }
+
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (updateResult.Succeeded)
+                {
+                    return RedirectToAction(nameof(Details), new { id = user.Id });
+                }
+                else
+                {
+                    AddErrors(updateResult);
+                }
+            }
+
+            model.SubscriptionOptions = GetSubscriptionOptions();
+            return View(model);
+        }
+
+
+        // GET: Users/Delete/5
+        public async Task<IActionResult> Delete(int id)
+        {
+            var user = await FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        // POST: Users/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var user = await FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                AddErrors(result);
+                return View(user);
+            }
         }
 
         private List<SelectListItem> GetSubscriptionOptions()
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Value = "None", Text = "No Subscription" },
-                new SelectListItem { Value = "Youth", Text = "Youth Subscription" },
-                new SelectListItem { Value = "Budget", Text = "Budget Subscription" },
-                new SelectListItem { Value = "Basic", Text = "Basic Subscription" },
-                new SelectListItem { Value = "Top", Text = "Top Subscription" }
+                new SelectListItem { Value = "0", Text = "No Subscription" },
+                new SelectListItem { Value = "1", Text = "Youth Subscription" },
+                new SelectListItem { Value = "2", Text = "Budget Subscription" },
+                new SelectListItem { Value = "3", Text = "Basic Subscription" },
+                new SelectListItem { Value = "4", Text = "Top Subscription" }
                 // Add more options if needed
             };
-        }
-
-        private int GetMaxItemsPerYear(string subscriptionType)
-        {
-            switch (subscriptionType)
-            {
-                case "None":
-                    return 0; // No subscription has a maximum of 0 items per year
-                case "Youth":
-                    return int.MaxValue; // Youth subscription has unlimited items per year
-                case "Budget":
-                    return 10; // Budget subscription has a maximum of 10 items per year
-                case "Basic":
-                    return int.MaxValue; // Basic subscription has unlimited items per year
-                case "Top":
-                    return int.MaxValue; // Top subscription has unlimited items per year
-                default:
-                    return 0; // Default to 0 if the subscription type is not recognized
-            }
         }
 
         // Helper method to find a user by id

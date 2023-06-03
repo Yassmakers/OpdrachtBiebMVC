@@ -48,7 +48,7 @@ else
     <p>No reservations or loans found.</p>
 }
 
-@if (Model.User.Loans.Count > 0)
+@if (Model != null && Model.User != null && Model.User.Loans != null && Model.User.Loans.Count > 0)
 {
     <h5>Old Borrowed Items History</h5>
     <ul>
@@ -59,29 +59,25 @@ else
     </ul>
 }
 
+
 @if (TempData["Message"] != null)
 {
     <div class="message success">@TempData["Message"]</div>
 }
 
-@if (Model.HasSubscription)
+
+<<h4>Subscription</h4>
+@if (Model != null && Model.SubscriptionType != null)
 {
-    <h4>Subscription</h4>
-    <p>You have an active subscription.</p>
-    <form method="post" action="@Url.Action("Unsubscribe", "Home")">
-        @Html.AntiForgeryToken() <!-- Add the anti-forgery token to the form -->
-        <button type="submit" class="btn btn-danger">Cancel Subscription</button>
-    </form>
+    <p>Subscription: @Model.SubscriptionType</p>
+    <p>If you want to upgrade your subscription, please visit a librarian at your local library.</p>
 }
 else
 {
-    <h4>Subscription</h4>
-    <p>You don't have an active subscription.</p>
-    <form method="post" action="@Url.Action("Subscribe", "Home")">
-        @Html.AntiForgeryToken() <!-- Add the anti-forgery token to the form -->
-        <button type="submit" class="btn btn-primary">Subscribe</button>
-    </form>
+    <p>No subscription found.</p>
 }
+
+
 
 <h4>Fine and Charges</h4>
 @if (Model.HasSubscription)

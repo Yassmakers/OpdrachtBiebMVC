@@ -31,13 +31,17 @@ namespace BiebWebApp.Controllers
             _signInManager = signInManager;
             _logger = logger;
             _roleManager = roleManager;
-        }
-
+            }
         [HttpGet("profile")]
         public IActionResult Profile()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _userManager.FindByIdAsync(userId).Result;
+
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             var reservations = _context.Reservations
                 .Include(r => r.User)
@@ -54,13 +58,15 @@ namespace BiebWebApp.Controllers
                 .ToList();
 
             var hasSubscription = user.HasSubscription;
+            var subscriptionType = GetSubscriptionTypeName(user.SubscriptionType); // Get the subscription type name
 
             var model = new ProfileViewModel
             {
                 User = user,
                 Reservations = reservations ?? new List<Reservation>(),
                 Loans = loans ?? new List<Loan>(),
-                HasSubscription = hasSubscription
+                HasSubscription = hasSubscription,
+                SubscriptionType = subscriptionType // Set the subscription type property
             };
 
             // Set the fine and charges based on the user's subscription
@@ -71,6 +77,25 @@ namespace BiebWebApp.Controllers
 
             return View(model);
         }
+
+        public string GetSubscriptionTypeName(string subscriptionType)
+        {
+            switch (subscriptionType)
+            {
+                case "1":
+                    return "Youth Subscription";
+                case "2":
+                    return "Budget Subscription";
+                case "3":
+                    return "Basic Subscription";
+                case "4":
+                    return "Top Subscription";
+                default:
+                    return "No Subscription";
+            }
+        }
+
+
 
         private decimal GetReservationFine(string subscriptionType)
         {

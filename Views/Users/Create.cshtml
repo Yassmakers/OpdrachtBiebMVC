@@ -22,7 +22,7 @@
     </div>
 }
 
-<form method="post">
+<form method="post" novalidate>
     <div class="form-group">
         <label asp-for="Email" class="control-label"></label>
         <input asp-for="Email" class="form-control" />
@@ -38,18 +38,10 @@
 
     <div class="form-group">
         <label asp-for="SelectedSubscription">Subscription</label>
-        <select asp-for="SelectedSubscription" class="form-control" id="subscription-select" name="SelectedSubscription">
+        <select asp-for="SelectedSubscription" asp-items="Model.SubscriptionOptions" class="form-control" id="subscription-select">
             <option value="">-- Select Subscription --</option>
-            @foreach (var option in Model.SubscriptionOptions)
-            {
-                <option value="@option.Value">@option.Text</option>
-            }
         </select>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="MaxItemsPerYear">Maximum Items per Year</label>
-        <input asp-for="MaxItemsPerYear" class="form-control" readonly id="max-items-per-year" />
+        <span asp-validation-for="SelectedSubscription" class="text-danger"></span>
     </div>
 
     <div class="form-group">
@@ -64,32 +56,3 @@
         <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
-
-<script>
-    // JavaScript code to update MaxItemsPerYear instantly
-    var subscriptionSelect = document.getElementById('subscription-select');
-    var maxItemsPerYearInput = document.getElementById('max-items-per-year');
-
-    subscriptionSelect.addEventListener('change', function () {
-        var subscription = subscriptionSelect.value;
-        var maxItemsPerYear = 0;
-
-        switch (subscription) {
-            case 'Youth':
-                maxItemsPerYear = Number.POSITIVE_INFINITY;
-                break;
-            case 'Budget':
-                maxItemsPerYear = 10;
-                break;
-            case 'Basic':
-            case 'Top':
-                maxItemsPerYear = Number.POSITIVE_INFINITY;
-                break;
-            default:
-                maxItemsPerYear = 0;
-                break;
-        }
-
-        maxItemsPerYearInput.value = maxItemsPerYear;
-    });
-</script>
