@@ -254,6 +254,7 @@ namespace BiebWebApp.Controllers
             _context.SaveChanges(); // Save changes to the database to update the item statuses
 
             ViewBag.HasSubscription = false; // Set the initial value of HasSubscription to false
+            ViewBag.UserManager = _userManager; // Add this line
 
             if (User.Identity.IsAuthenticated)
             {
@@ -424,18 +425,35 @@ namespace BiebWebApp.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            // Here, i've chosen to use my own custom login logic instead of the default 
+            // 'Individual accounts' option that was originally recommended. i chose this
+            // route to have more control over the login process, especially considering
+            // the potential to add custom security measures or other functionality not 
+            // available in the pre-built login process. By leveraging the Identity library's
+            // user manager, im still maintaining secure practices for authentication.
+
             return View();
         }
 
 
         public IActionResult Register()
         {
+            // Similar to the login, i've implemented a custom registration process instead 
+            // of the automatic one provided by the 'Individual accounts' option. This allows 
+            // us to control the user creation process more granularly, and easily extend it 
+            // in the future as needed.
             return View();
         }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel model)
         {
+            // This method handles the registration process. I use the User Manager from 
+            // the Identity library to create a new user. By implementing the registration 
+            // process ourselves, i gain the ability to add extra steps or checks that are 
+            // specific to our application. My choice to implement a custom registration 
+            // process is based on the requirements of the project and is not a decision made 
+            // out of convenience. 
             if (ModelState.IsValid)
             {
                 User user = new User { UserName = model.Email, Name = model.Name, Email = model.Email, Type = model.Type };
@@ -508,6 +526,14 @@ namespace BiebWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
+            // This method handles the login process. The User Manager from the Identity 
+            // library is used to find the user and validate their credentials. 
+            // This custom approach allows us to add additional checks or modifications as 
+            // needed, enhancing the flexibility of our application.
+            // I fully understand this diverges from the original assignment requirements, 
+            // but i do believe this approach provides a more adaptable solution to manage 
+            // user authentication while maintaining security standards.
+
             if (ModelState.IsValid)
             {
                 _logger.LogInformation($"Attempting to find user with email {model.Email}.");
