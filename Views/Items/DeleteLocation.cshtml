@@ -1,0 +1,35 @@
+﻿@model List<BiebWebApp.Models.Location>
+
+<h2>Delete Location</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Location Name</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var location in Model)
+            {
+                <tr>
+                    <td>@location.LocationName</td>
+                    <td>
+                        <form asp-action="DeleteLocationConfirmed" method="post">
+                            <input type="hidden" name="locationId" value="@location.Id" />
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No locations found.</p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>

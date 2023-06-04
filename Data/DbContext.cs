@@ -12,6 +12,7 @@ namespace BiebWebApp.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Loan> Loans { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<Location> Locations { get; set; }
 
         public BiebWebAppContext(DbContextOptions<BiebWebAppContext> options)
             : base(options)

@@ -1,11 +1,15 @@
-﻿using BiebWebApp.Models;
+﻿using BiebWebApp.Data;
+using BiebWebApp.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace BiebWebApp.Controllers
@@ -24,11 +28,22 @@ namespace BiebWebApp.Controllers
             _logger = logger;
         }
 
+
         // GET: Users
         public async Task<IActionResult> Index()
         {
+
+
             var users = await _userManager.Users.ToListAsync();
             return View(users);
+        }
+
+        private List<Location> GetLocations()
+        {
+            using (var context = new BiebWebAppContext(new DbContextOptions<BiebWebAppContext>()))
+            {
+                return context.Locations.ToList();
+            }
         }
 
         // GET: Users/Details/5
@@ -57,31 +72,34 @@ namespace BiebWebApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Create(RegisterModel model)
         {
-            if (ModelState.IsValid)
+            var user = new User
             {
-                var user = new User
-                {
-                    UserName = model.Email,
-                    Name = model.Name,
-                    Email = model.Email,
-                    Type = model.Type,
-                    SubscriptionType = model.SelectedSubscription.ToString(),
-                    IsBlocked = false
-                };
+                UserName = model.Email,
+                Name = model.Name,
+                Email = model.Email,
+                Type = model.Type,
+                SubscriptionType = model.SelectedSubscription.ToString(), // Set the selected subscription
+            };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-
+            var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                // Process the user creation
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
                 AddErrors(result);
             }
 
+            // Repopulate subscription options in case of validation errors
             model.SubscriptionOptions = GetSubscriptionOptions();
+
             return View("Register", model);
         }
 
+        // GET: Users/Edit/5
+        // GET: Users/Edit/5
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
@@ -96,13 +114,16 @@ namespace BiebWebApp.Controllers
                 Id = user.Id,
                 Name = user.Name,
                 Type = user.Type,
-                SubscriptionType = user.SubscriptionType,
-                SubscriptionOptions = GetSubscriptionOptions(),
-                IsBlocked = user.IsBlocked
+                SubscriptionType = user.SubscriptionType,// Set the SubscriptionType property
+                IsBlocked = user.IsBlocked,
+                SubscriptionOptions = GetSubscriptionOptions() // Populate the SubscriptionOptions list
             };
 
             return View(model);
         }
+
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -115,28 +136,55 @@ namespace BiebWebApp.Controllers
 
             if (!ModelState.IsValid)
             {
-                return View(model);
+                _logger.LogError("Model state is not valid.");
+                _logger.LogError(string.Join("; ", ModelState.Values
+                                                .SelectMany(state => state.Errors)
+                                                .Select(error => error.ErrorMessage)));
             }
 
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
             {
+                _logger.LogError($"User with ID {id} not found.");
                 return NotFound();
             }
 
             user.Name = model.Name;
             user.Type = model.Type;
+            user.IsBlocked = model.IsBlocked;
             user.SubscriptionType = model.SubscriptionType;
 
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
+            if (!string.IsNullOrEmpty(model.NewPassword))
             {
-                return RedirectToAction(nameof(Index));
+                var passwordValidator = new PasswordValidator<User>();
+                var result = await passwordValidator.ValidateAsync(_userManager, user, model.NewPassword);
+                if (!result.Succeeded)
+                {
+                    _logger.LogError("Password validation failed: {0}", string.Join("; ", result.Errors.Select(e => e.Description)));
+                    AddErrors(result);
+                    model.SubscriptionOptions = GetSubscriptionOptions();
+                    return View(model);
+                }
+
+                user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, model.NewPassword);
             }
 
-            AddErrors(result);
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded)
+            {
+                _logger.LogError("Failed to update user: {0}", string.Join("; ", updateResult.Errors.Select(e => e.Description)));
+                AddErrors(updateResult);
+            }
+
+            if (updateResult.Succeeded)
+            {
+                return RedirectToAction(nameof(Details), new { id = user.Id });
+            }
+
+            model.SubscriptionOptions = GetSubscriptionOptions();
             return View(model);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]

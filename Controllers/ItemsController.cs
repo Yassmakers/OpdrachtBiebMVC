@@ -46,6 +46,7 @@ namespace BiebWebApp.Controllers
         // GET: Items/Create
         public IActionResult Create()
         {
+            ViewBag.Locations = _context.Locations.Select(l => l.LocationName).Distinct().ToList();
             return View();
         }
 
@@ -99,8 +100,36 @@ namespace BiebWebApp.Controllers
                 Status = item.Status
             };
 
+            ViewBag.Locations = await _context.Locations.Select(l => l.LocationName).Distinct().ToListAsync();
+
             return View(model);
         }
+
+
+        // GET: Items/DeleteLocation
+        public IActionResult DeleteLocation()
+        {
+            var locations = _context.Locations.ToList();
+            return View(locations);
+        }
+
+        // POST: Items/DeleteLocationConfirmed
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteLocationConfirmed(int locationId)
+        {
+            var location = await _context.Locations.FindAsync(locationId);
+            if (location == null)
+            {
+                return NotFound();
+            }
+
+            _context.Locations.Remove(location);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(DeleteLocation));
+        }
+
+
 
         // POST: Items/Edit/5
         [HttpPost]
@@ -146,8 +175,11 @@ namespace BiebWebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            ViewBag.Locations = await _context.Items.Select(i => i.Location).Distinct().ToListAsync();
+
             return View(model);
         }
+
         // GET: Items/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -181,6 +213,32 @@ namespace BiebWebApp.Controllers
         private bool ItemExists(int id)
         {
             return _context.Items.Any(e => e.Id == id);
+        }
+
+        // GET: Items/CreateLocation
+        public IActionResult CreateLocation()
+        {
+            return View();
+        }
+
+        // POST: Items/CreateLocation
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateLocation(CreateLocationModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var location = new Location
+                {
+                    LocationName = model.LocationName
+                };
+
+                _context.Locations.Add(location);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(model);
         }
     }
 }

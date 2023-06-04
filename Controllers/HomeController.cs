@@ -190,24 +190,23 @@ namespace BiebWebApp.Controllers
 
 
 
-        public IActionResult Index(string searchString, string filter, string author, int? year)
+        public async Task<IActionResult> Index(string searchString, string filter, string authorFilter, int? yearFilter, string locationFilter)
         {
-            if (HttpContext.Request.Path == "/loans")
-            {
-                // If the user is accessing the Loans page, return the view without updating item statuses
-                return View(new List<Item>());
-            }
-
+            // Get the list of items from the database
             IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
 
+            // Apply the search filter
             if (!string.IsNullOrEmpty(searchString))
             {
+                var searchUpper = searchString.ToUpper();
                 itemsQuery = itemsQuery.Where(item =>
-                    item.Title.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    item.Author.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    item.Location.IndexOf(searchString, StringComparison.OrdinalIgnoreCase) >= 0);
+                    item.Title.ToUpper().Contains(searchUpper) ||
+                    item.Author.ToUpper().Contains(searchUpper) ||
+                    item.Location.ToUpper().Contains(searchUpper) ||
+                    item.Year.ToString().Contains(searchString)); // Add search by year
             }
 
+            // Apply the filter based on the item type
             if (!string.IsNullOrEmpty(filter))
             {
                 ItemType itemType;
@@ -217,19 +216,28 @@ namespace BiebWebApp.Controllers
                 }
             }
 
-            if (!string.IsNullOrEmpty(author))
+            // Apply the filter based on the author
+            if (!string.IsNullOrEmpty(authorFilter))
             {
                 itemsQuery = itemsQuery.Where(item =>
-                    item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0);
+                    item.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase));
             }
 
-            if (year.HasValue)
+            // Apply the filter based on the year
+            if (yearFilter.HasValue)
             {
-                itemsQuery = itemsQuery.Where(item => item.Year == year);
+                itemsQuery = itemsQuery.Where(item => item.Year == yearFilter);
             }
 
-            var items = itemsQuery.ToList();
+            // Apply the filter based on the selected location
+            if (!string.IsNullOrEmpty(locationFilter))
+            {
+                itemsQuery = itemsQuery.Where(item => item.Location.Contains(locationFilter, StringComparison.OrdinalIgnoreCase));
+            }
 
+            var items = await itemsQuery.ToListAsync();
+
+            // Update the status of the items
             foreach (var item in items)
             {
                 var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
@@ -251,15 +259,13 @@ namespace BiebWebApp.Controllers
                 }
             }
 
-            _context.SaveChanges(); // Save changes to the database to update the item statuses
-
             ViewBag.HasSubscription = false; // Set the initial value of HasSubscription to false
             ViewBag.UserManager = _userManager; // Add this line
 
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = _userManager.FindByIdAsync(userId).Result;
+                var user = await _userManager.FindByIdAsync(userId);
 
                 if (user != null)
                 {
@@ -267,8 +273,18 @@ namespace BiebWebApp.Controllers
                 }
             }
 
+            // Retrieve the list of locations from the database or any other source
+            var locations = await _context.Locations.ToListAsync();
+
+            // Assign the list of locations to ViewBag.Locations
+            ViewBag.Locations = locations;
+
             return View(items);
         }
+
+
+
+
 
 
 

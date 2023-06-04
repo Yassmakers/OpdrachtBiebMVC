@@ -1,11 +1,10 @@
-﻿@using Microsoft.AspNetCore.Identity
-
+﻿@using BiebWebApp.Models
+@using Microsoft.AspNetCore.Identity
 @model List<Item>
 
 @{
     ViewData["Title"] = "Home Page";
-        var _userManager = ViewBag.UserManager as UserManager<User>; // Retrieve the _userManager from the ViewBag
-
+    var _userManager = ViewBag.UserManager as UserManager<User>; // Retrieve the _userManager from the ViewBag
 }
 
 @using System.Security.Claims
@@ -34,7 +33,6 @@
     </style>
 </head>
 <body>
-
     @if (User.Identity.IsAuthenticated)
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -46,7 +44,6 @@
                 <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
                 <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
             </div>
-
 
             @if (TempData["Message"] != null)
             {
@@ -84,9 +81,10 @@
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "" })">All</a>
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Location</h6>
-            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Library" })">Library</a>
-            <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Shelf A" })">Shelf A</a>
-            <!-- Add more options for other locations -->
+            @foreach (var location in ViewBag.Locations)
+            {
+                <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = location.LocationName })">@location.LocationName</a>
+            }
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Type</h6>
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Book" })">Book</a>
@@ -99,21 +97,23 @@
 
     <div class="input-group mb-3" style="margin-bottom: 0;">
         <div class="input-group-prepend">
-            <span class="input-group-text">Filter by author:</span>
+            <span class="input-group-text">Filter by location:</span>
         </div>
-        <input type="text" class="form-control form-control-sm" placeholder="Author" name="authorFilter" id="authorFilterInput">
-        <div class="input-group-prepend">
-            <span class="input-group-text">Filter by year:</span>
-        </div>
-        <input type="number" class="form-control form-control-sm" placeholder="Year" name="yearFilter" id="yearFilterInput">
+        <select class="form-control form-control-sm" id="locationFilterInput">
+            <option value="">-- Select Location --</option>
+            @foreach (var location in ViewBag.Locations)
+            {
+                <option value="@location.LocationName">@location.LocationName</option>
+            }
+        </select>
         <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" id="filterBtn">Apply Filters</button>
+            <button class="btn btn-outline-secondary" type="button" id="locationFilterBtn">Apply Filter</button>
         </div>
     </div>
 
     <form method="get" action="@Url.Action("Index", "Home")">
         <div class="input-group mb-3">
-            <input type="text" class="form-control font-weight-bold" placeholder="Search items..." name="searchString" value="@ViewData["searchString"]">
+            <input type="text" class="form-control font-weight-bold" placeholder="Search items on Name/Author/Year..." name="searchString" value="@ViewData["searchString"]">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
             </div>
@@ -145,48 +145,39 @@
                         <td>@item.Year</td>
                         <td>@item.Location</td>
                         <td>
-                            @if (User.Identity.IsAuthenticated && User.IsInRole("Member"))
+                            @if (User.Identity.IsAuthenticated)
                             {
                                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                                 var reservation = item.Reservations?.FirstOrDefault(r => r.UserId.ToString() == userId);
                                 var hasReserved = reservation != null;
+                                var loaned = reservation?.Loans?.Any(l => l.ItemId == item.Id && l.UserId.ToString() == userId);
 
-                                if (hasReserved)
-                                {
-                                    var loaned = reservation.Loans?.Any(l => l.ItemId == item.Id && l.UserId.ToString() == userId);
-                                    if (loaned.HasValue && loaned.Value)
+                            <td>
+                                    @if (hasReserved)
                                     {
+                                        if (loaned.HasValue && loaned.Value)
+                                        {
                                         <button class="btn btn-secondary btn-sm" disabled>Loaned</button>
-                                    }
-                                    else
-                                    {
+                                        }
+                                        else
+                                        {
                                         <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Home")?id=@reservation.Id">Loan</a>
+                                        }
                                     }
-                                }
-                                else
-                                {
-                                    if (item.Status == ItemStatus.Reserved)
+                                    else if (item.Status == ItemStatus.Reserved)
                                     {
-                                        <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
+                                    <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
                                     }
                                     else if (item.Status == ItemStatus.Loaned)
                                     {
-                                        <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
-                                    }
-                                    else if (ViewBag.HasSubscription)
-                                    {
-                                        <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
+                                    <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
                                     }
                                     else
                                     {
-                                        <button class="btn btn-primary btn-sm" disabled>No Subscription</button>
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
                                     }
-                                }
-                            }
-                            else
-                            {
-                                <button class="btn btn-primary btn-sm" disabled>Login to Reserve</button>
+                            </td>
                             }
 
                         </td>
@@ -210,7 +201,6 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
-
     <script>
         $(document).ready(function () {
             $('.dropdown-toggle').dropdown();
@@ -233,23 +223,37 @@
                 });
             });
 
+            $('#locationFilterBtn').click(function () {
+                var locationFilter = $('#locationFilterInput').val().trim();
+
+                // Example using JavaScript to filter the table on the client side
+                var rows = document.querySelectorAll('.table tbody tr');
+                rows.forEach(function (row) {
+                    var locationCell = row.querySelector('td:nth-child(5)');
+                    var displayRow = locationFilter === '' || locationCell.textContent.trim() === locationFilter;
+                    row.style.display = displayRow ? 'table-row' : 'none';
+                });
+            });
+
             $('#filterBtn').click(function () {
                 var authorFilter = $('#authorFilterInput').val().trim();
-                var yearFilter = $('#yearFilterInput').val().trim();
-
-                // Send the filter values to the server or update the table using JavaScript
+                var yearFilter = parseInt($('#yearFilterInput').val().trim());
+                var locationFilter = $('#locationFilterInput').val().trim(); // Add this line
 
                 // Example using JavaScript to filter the table on the client side
                 var rows = document.querySelectorAll('.table tbody tr');
                 rows.forEach(function (row) {
                     var authorCell = row.querySelector('td:nth-child(2)');
                     var yearCell = row.querySelector('td:nth-child(4)');
-                    if (authorCell.textContent.toLowerCase().includes(authorFilter.toLowerCase()) &&
-                        yearCell.textContent.trim() === yearFilter) {
-                        row.style.display = 'table-row';
-                    } else {
-                        row.style.display = 'none';
-                    }
+                    var locationCell = row.querySelector('td:nth-child(5)'); // Add this line
+
+                    var matchesAuthor = authorCell.textContent.toLowerCase().includes(authorFilter.toLowerCase());
+                    var matchesYear = isNaN(yearFilter) || yearCell.textContent.trim() === yearFilter.toString();
+                    var matchesLocation = locationFilter === '' || locationCell.textContent.trim() === locationFilter; // Add this line
+
+                    var displayRow = matchesAuthor && matchesYear && matchesLocation; // Update this line
+
+                    row.style.display = displayRow ? 'table-row' : 'none';
                 });
             });
         });
