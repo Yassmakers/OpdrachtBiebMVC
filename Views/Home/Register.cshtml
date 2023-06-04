@@ -38,9 +38,9 @@
 
     <div class="form-group">
         <label asp-for="SelectedSubscription">Subscription</label>
-       <select asp-for="SelectedSubscription" asp-items="Model.SubscriptionOptions" class="form-control" id="subscription-select">
-    <option value="" disabled selected>-- Select Subscription --</option>
-</select>
+        <select asp-for="SelectedSubscription" asp-items="Model.SubscriptionOptions" class="form-control" id="subscription-select">
+            <option value="" disabled selected>-- Select Subscription --</option>
+        </select>
 
         <span asp-validation-for="SelectedSubscription" class="text-danger"></span>
     </div>
@@ -57,4 +57,3 @@
         <input type="submit" value="Create" class="btn btn-primary" />
     </div>
 </form>
-

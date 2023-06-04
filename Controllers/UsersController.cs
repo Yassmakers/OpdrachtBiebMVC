@@ -114,16 +114,12 @@ namespace BiebWebApp.Controllers
                 Id = user.Id,
                 Name = user.Name,
                 Type = user.Type,
-                SubscriptionType = user.SubscriptionType,// Set the SubscriptionType property
-                IsBlocked = user.IsBlocked,
+                SubscriptionType = user.SubscriptionType, // Set the SubscriptionType property
                 SubscriptionOptions = GetSubscriptionOptions() // Populate the SubscriptionOptions list
             };
 
             return View(model);
         }
-
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -151,7 +147,6 @@ namespace BiebWebApp.Controllers
 
             user.Name = model.Name;
             user.Type = model.Type;
-            user.IsBlocked = model.IsBlocked;
             user.SubscriptionType = model.SubscriptionType;
 
             if (!string.IsNullOrEmpty(model.NewPassword))
@@ -184,6 +179,8 @@ namespace BiebWebApp.Controllers
             model.SubscriptionOptions = GetSubscriptionOptions();
             return View(model);
         }
+
+
 
 
         [HttpPost]

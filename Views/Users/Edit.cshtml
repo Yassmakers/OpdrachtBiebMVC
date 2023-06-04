@@ -42,12 +42,6 @@
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.IsBlocked)
-        @Html.CheckBoxFor(model => model.IsBlocked)
-    </div>
-
-
-    <div class="form-group">
         <button type="submit" class="btn btn-primary">Save</button>
         @Html.ActionLink("Cancel", "Details", new { id = Model.Id }, new { @class = "btn btn-secondary" })
     </div>

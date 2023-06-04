@@ -16,8 +16,6 @@ namespace BiebWebApp.Models
 
         [Required(ErrorMessage = "Please select the subscription type.")]
         public string SubscriptionType { get; set; }
-        public bool IsBlocked { get; set; }
-
         public int SelectedSubscription { get; set; }
 
         [Display(Name = "New Password")]

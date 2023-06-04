@@ -21,7 +21,6 @@ namespace BiebWebApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var passwordHasher = new PasswordHasher<User>();
-
             modelBuilder.Entity<User>()
                 .HasData(
                     new User
@@ -37,7 +36,7 @@ namespace BiebWebApp.Data
                         SecurityStamp = Guid.NewGuid().ToString("D"),
                         ConcurrencyStamp = Guid.NewGuid().ToString("D"),
                         Type = UserType.Member,
-                        SubscriptionType = "Basic",
+                        SubscriptionType = "3", // Set the subscription type as a string
                         PasswordHash = passwordHasher.HashPassword(null, "YourDesiredPasswordHere"),
                         IsBlocked = false // Set the IsBlocked property to false
                     },
@@ -54,11 +53,12 @@ namespace BiebWebApp.Data
                         SecurityStamp = Guid.NewGuid().ToString("D"),
                         ConcurrencyStamp = Guid.NewGuid().ToString("D"),
                         Type = UserType.Administrator,
-                        SubscriptionType = "Top",
+                        SubscriptionType = "1", // Set the subscription type as a string
                         PasswordHash = passwordHasher.HashPassword(null, "YourDesiredPasswordHere"),
                         IsBlocked = false // Set the IsBlocked property to false
                     }
                 );
+
 
             modelBuilder.Entity<Item>()
                 .Property(i => i.Status)

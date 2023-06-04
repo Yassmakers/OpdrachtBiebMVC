@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace BiebWebApp.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateaasals : Migration
+    public partial class InitialCreateaasalsopl : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -286,8 +286,8 @@ namespace BiebWebApp.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "HasSubscription", "IsBlocked", "LockoutEnabled", "LockoutEnd", "MaxItemsPerYear", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "SubscriptionType", "TwoFactorEnabled", "Type", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 0, "a4eeb31d-c0ef-485c-a72c-547d87c6a21f", "johndoe@example.com", false, false, false, true, null, 0, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAEB3DNS4hbOnhXYZWHeM8Ci5cvkPYwYVt55nPPPkZlEeYHdbn6ujUHg0+PGszRjUhOA==", null, false, "c467e980-610b-4a31-a946-9c4295e1b2b3", "Basic", false, 0, "John Doe" },
-                    { 2, 0, "69eb5225-2b80-4efb-8b01-cca041168394", "janesmith@example.com", false, false, false, true, null, 0, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAELSNbTLFVCpKtABsQfiz5KeHeqg/4igUOKsfu2XWVvWBfjiVQ2+BxQYeo/g5qCRMhQ==", null, false, "0890d0cc-331d-4e73-bec2-d758372c0a48", "Top", false, 2, "Jane Smith" }
+                    { 1, 0, "3c0eb980-4634-41ac-a66d-d467ec796e63", "johndoe@example.com", false, false, false, true, null, 0, "John Doe", "JOHNDOE@EXAMPLE.COM", "JOHNDOE@EXAMPLE.COM", "AQAAAAEAACcQAAAAEC0VTDoFsQxBwwntDFc4AUGaCLQVTFq2fbUbK3twXYb2xgq4wSPeLmphKeqpj0/VYA==", null, false, "dcb98c70-9adf-468c-a4cc-ccb891748143", "3", false, 0, "John Doe" },
+                    { 2, 0, "98ff80db-bc58-465c-8cbb-d70e510f6015", "janesmith@example.com", false, false, false, true, null, 0, "Jane Smith", "JANESMITH@EXAMPLE.COM", "JANESMITH@EXAMPLE.COM", "AQAAAAEAACcQAAAAEBuYiMfej/PcBBIQDLz0RyYe/kLWMC4gG/gnsBWkHFkGBSh4pcpFMNlmz1EoJPBXYw==", null, false, "10803032-3318-4921-a965-cc3f9234d543", "1", false, 2, "Jane Smith" }
                 });
 
             migrationBuilder.InsertData(
@@ -312,14 +312,14 @@ namespace BiebWebApp.Migrations
                 columns: new[] { "Id", "ItemId", "ReservationDate", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 2, new DateTime(2023, 5, 29, 0, 29, 12, 391, DateTimeKind.Local).AddTicks(270), 1 },
-                    { 2, 3, new DateTime(2023, 5, 29, 0, 29, 12, 391, DateTimeKind.Local).AddTicks(272), 2 }
+                    { 1, 2, new DateTime(2023, 5, 29, 1, 11, 56, 248, DateTimeKind.Local).AddTicks(90), 1 },
+                    { 2, 3, new DateTime(2023, 5, 29, 1, 11, 56, 248, DateTimeKind.Local).AddTicks(93), 2 }
                 });
 
             migrationBuilder.InsertData(
                 table: "Loans",
                 columns: new[] { "Id", "ItemId", "LoanDate", "ReservationId", "ReturnDate", "UserId" },
-                values: new object[] { 1, 2, new DateTime(2023, 5, 29, 0, 29, 12, 391, DateTimeKind.Local).AddTicks(222), 1, new DateTime(2023, 6, 19, 0, 29, 12, 391, DateTimeKind.Local).AddTicks(250), 1 });
+                values: new object[] { 1, 2, new DateTime(2023, 5, 29, 1, 11, 56, 248, DateTimeKind.Local).AddTicks(32), 1, new DateTime(2023, 6, 19, 1, 11, 56, 248, DateTimeKind.Local).AddTicks(63), 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
