@@ -19,14 +19,14 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans
-        // GET: Loans
         public async Task<IActionResult> Index(string searchString)
         {
             var loansQuery = _context.Loans.Include(l => l.User).Include(l => l.Item);
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                loansQuery = loansQuery.Where(l => l.User.Name.Contains(searchString))
+                loansQuery = loansQuery.Where(l => l.User.Name.Contains(searchString) ||
+                                                   l.Item.Title.Contains(searchString))
                                        .Include(l => l.Item);
             }
 
@@ -34,6 +34,7 @@ namespace BiebWebApp.Controllers
 
             return View(loans);
         }
+
 
         // GET: Loans/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -153,7 +154,6 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans/Return/5
-        // GET: Loans/Return/5
         public async Task<IActionResult> Return(int? id)
         {
             if (id == null)
@@ -182,6 +182,10 @@ namespace BiebWebApp.Controllers
             var reservation = _context.Reservations.FirstOrDefault(r => r.Id == loan.ReservationId);
             if (reservation != null)
             {
+                // Remove the associated loans for the reservation
+                var loansToRemove = _context.Loans.Where(l => l.ReservationId == reservation.Id);
+                _context.Loans.RemoveRange(loansToRemove);
+
                 _context.Reservations.Remove(reservation);
             }
 
@@ -191,8 +195,6 @@ namespace BiebWebApp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
-
 
 
         // POST: Loans/Delete/5

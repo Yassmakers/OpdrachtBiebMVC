@@ -190,23 +190,25 @@ namespace BiebWebApp.Controllers
 
 
 
-        public async Task<IActionResult> Index(string searchString, string filter, string authorFilter, int? yearFilter, string locationFilter)
+        public IActionResult Index(string searchString, string filter, string author, int? year)
         {
-            // Get the list of items from the database
-            IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
-
-            // Apply the search filter
-            if (!string.IsNullOrEmpty(searchString))
+            if (HttpContext.Request.Path == "/loans")
             {
-                var searchUpper = searchString.ToUpper();
-                itemsQuery = itemsQuery.Where(item =>
-                    item.Title.ToUpper().Contains(searchUpper) ||
-                    item.Author.ToUpper().Contains(searchUpper) ||
-                    item.Location.ToUpper().Contains(searchUpper) ||
-                    item.Year.ToString().Contains(searchString)); // Add search by year
+                // If the user is accessing the Loans page, return the view without updating item statuses
+                return View(new List<Item>());
             }
 
-            // Apply the filter based on the item type
+            IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                string searchStringUpper = searchString.ToUpper();
+                itemsQuery = itemsQuery.Where(item =>
+                    EF.Functions.Like(item.Title.ToUpper(), $"%{searchStringUpper}%") ||
+                    EF.Functions.Like(item.Author.ToUpper(), $"%{searchStringUpper}%") ||
+                    EF.Functions.Like(item.Location.ToUpper(), $"%{searchStringUpper}%"));
+            }
+
             if (!string.IsNullOrEmpty(filter))
             {
                 ItemType itemType;
@@ -216,28 +218,19 @@ namespace BiebWebApp.Controllers
                 }
             }
 
-            // Apply the filter based on the author
-            if (!string.IsNullOrEmpty(authorFilter))
+            if (!string.IsNullOrEmpty(author))
             {
                 itemsQuery = itemsQuery.Where(item =>
-                    item.Author.Contains(authorFilter, StringComparison.OrdinalIgnoreCase));
+                    item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0);
             }
 
-            // Apply the filter based on the year
-            if (yearFilter.HasValue)
+            if (year.HasValue)
             {
-                itemsQuery = itemsQuery.Where(item => item.Year == yearFilter);
+                itemsQuery = itemsQuery.Where(item => item.Year == year);
             }
 
-            // Apply the filter based on the selected location
-            if (!string.IsNullOrEmpty(locationFilter))
-            {
-                itemsQuery = itemsQuery.Where(item => item.Location.Contains(locationFilter, StringComparison.OrdinalIgnoreCase));
-            }
+            var items = itemsQuery.ToList();
 
-            var items = await itemsQuery.ToListAsync();
-
-            // Update the status of the items
             foreach (var item in items)
             {
                 var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
@@ -259,13 +252,15 @@ namespace BiebWebApp.Controllers
                 }
             }
 
+            _context.SaveChanges(); // Save changes to the database to update the item statuses
+
             ViewBag.HasSubscription = false; // Set the initial value of HasSubscription to false
             ViewBag.UserManager = _userManager; // Add this line
 
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = await _userManager.FindByIdAsync(userId);
+                var user = _userManager.FindByIdAsync(userId).Result;
 
                 if (user != null)
                 {
@@ -273,14 +268,10 @@ namespace BiebWebApp.Controllers
                 }
             }
 
-            // Retrieve the list of locations from the database or any other source
-            var locations = await _context.Locations.ToListAsync();
-
-            // Assign the list of locations to ViewBag.Locations
-            ViewBag.Locations = locations;
-
             return View(items);
         }
+
+
 
 
 
@@ -313,11 +304,6 @@ namespace BiebWebApp.Controllers
             if (user == null)
             {
                 return NotFound();
-            }
-
-            if (user.IsBlocked)
-            {
-                return RedirectToAction(nameof(Logout));
             }
 
             // Check if the user has already reserved the item
@@ -364,7 +350,7 @@ namespace BiebWebApp.Controllers
             return RedirectToAction(nameof(Profile));
         }
 
-       
+
 
         [Authorize]
         [HttpPost]
@@ -587,7 +573,6 @@ namespace BiebWebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
         [Authorize]
         public IActionResult Loan(int? id)
         {
@@ -622,6 +607,20 @@ namespace BiebWebApp.Controllers
                 return RedirectToAction(nameof(Profile));
             }
 
+            var loans = _context.Loans
+                .Where(l => l.UserId == user.Id && l.ReturnDate < DateTime.Now)
+                .ToList();
+
+            var subscriptionType = user.SubscriptionType;
+            var maxLoanLimit = GetMaxLoanLimit(subscriptionType);
+
+            // Check if the user has reached the loan limit for loaning items at once
+            if (loans.Count >= maxLoanLimit && subscriptionType != "4") // Exclude the top subscription
+            {
+                TempData["Message"] = $"You have reached your subscription's loan limit for loaning items at once ({maxLoanLimit} loans).";
+                return RedirectToAction(nameof(Profile));
+            }
+
             var loan = new Loan
             {
                 UserId = user.Id,
@@ -653,6 +652,30 @@ namespace BiebWebApp.Controllers
             return RedirectToAction(nameof(Profile));
         }
 
+        private int GetMaxLoanLimit(string subscriptionType)
+        {
+            if (int.TryParse(subscriptionType, out int type))
+            {
+                switch (type)
+                {
+                    case 1: // Youth Subscription
+                        return 10; // Loan limit is 10
+                    case 2: // Budget Subscription
+                        return 10; // Loan limit is 10
+                    case 3: // Basic Subscription
+                        return 10; // Loan limit is 10
+                    case 4: // Top Subscription
+                        return 20; // Update the loan limit to 20
+                    default:
+                        return 0;
+                }
+            }
+
+            return 0;
+        }
+
+
+
 
 
 
@@ -678,27 +701,7 @@ namespace BiebWebApp.Controllers
             return RedirectToAction(nameof(Profile));
         }
 
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Unsubscribe()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = _userManager.FindByIdAsync(userId).Result;
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            user.HasSubscription = false; // Set the subscription status to false
-            _context.SaveChanges();
-
-            TempData["Message"] = "Subscription cancelled successfully.";
-
-            return RedirectToAction(nameof(Profile));
-        }
-
+        
        
 
 

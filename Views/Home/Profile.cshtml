@@ -5,6 +5,11 @@
 <p>Name: @Model.User.Name</p>
 <p>Email: @Model.User.Email</p>
 
+@if (TempData["Message"] != null)
+{
+    <div class="message success">@TempData["Message"]</div>
+}
+
 <h4>Reservations and Loans</h4>
 @if (Model.Reservations.Count > 0)
 {
@@ -59,18 +64,11 @@ else
     </ul>
 }
 
-@if (TempData["Message"] != null)
-{
-    <div class="message success">@TempData["Message"]</div>
-}
-
-
-
 @if (Model != null && Model.SubscriptionType != null)
 {
     <h4>Subscription</h4>
     <p>Subscription Type: @Model.SubscriptionType</p>
-        <p>If you want to upgrade your subscription, please visit a librarian at your local library.</p>
+    <p>If you want to upgrade your subscription, please visit a librarian at your local library.</p>
 
     @if (Model.SubscriptionCharge > 0)
     {

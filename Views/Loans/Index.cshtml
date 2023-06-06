@@ -4,9 +4,15 @@
 
 <h1>List of Loans</h1>
 
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
 <form method="get">
     <div class="form-group">
-        <label for="searchString">Search by user name:</label>
+        <label for="searchString">Search by user name or item name:</label>
         <input type="text" id="searchString" name="searchString" class="form-control" />
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
