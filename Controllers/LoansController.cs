@@ -68,29 +68,7 @@ namespace BiebWebApp.Controllers
             return View(loan);
         }
 
-        // GET: Loans/Create
-        public IActionResult Create()
-        {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name");
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Title");
-            return View();
-        }
-
-        // POST: Loans/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,ItemId,LoanDate,ReturnDate")] Loan loan)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(loan);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", loan.UserId);
-            ViewData["ItemId"] = new SelectList(_context.Items, "Id", "Title", loan.ItemId);
-            return View(loan);
-        }
+       
 
         // GET: Loans/Edit/5
         public async Task<IActionResult> Edit(int? id)

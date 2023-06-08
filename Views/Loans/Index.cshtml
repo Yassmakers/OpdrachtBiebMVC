@@ -1,7 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @model IEnumerable<BiebWebApp.Models.Loan>
 
-
 <h1>List of Loans</h1>
 
 @if (TempData["Message"] != null)
@@ -10,6 +9,7 @@
         @TempData["Message"]
     </div>
 }
+
 <form method="get">
     <div class="form-group">
         <label for="searchString">Search by user name or item name:</label>
@@ -17,7 +17,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Search</button>
 </form>
-
 
 @if (Model.Any())
 {
@@ -55,5 +54,39 @@ else
 }
 
 <p>
-    <a asp-action="Create">Create New Loan</a>
+    <a id="createReservationButton" class="btn btn-primary">Loan Item</a>
 </p>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#createReservationButton').on('click', function () {
+                // Show the modal or display an alert box
+                // Example using Bootstrap modal
+                $('#reservationModal').modal('show');
+
+                // Example using alert box
+                // alert(Members can choose the items they want on the homepage and loan them themselves. This page is only for viewing and managing loans.');
+            });
+        });
+    </script>
+}
+
+<div class="modal fade" id="reservationModal" tabindex="-1" role="dialog" aria-labelledby="reservationModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reservationModalLabel">Creating Reservations</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Members can choose the items they want on the homepage and loan them themselves. This page is only for viewing and managing loans.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
