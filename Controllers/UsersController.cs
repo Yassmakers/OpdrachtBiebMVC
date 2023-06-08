@@ -32,50 +32,6 @@ namespace BiebWebApp.Controllers
             _context = context;
         }
 
-        public IActionResult OpenBills()
-        {
-            // Retrieve users with open bills from the database
-            var usersWithOpenBills = _context.Users
-                .Include(u => u.Payments)
-                .Where(u => u.Payments.Any(p => !p.IsPaid))
-                .ToList();
-
-            return View(usersWithOpenBills);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> PayBill(int userId, int paymentId)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var payment = user.Payments.FirstOrDefault(p => p.Id == paymentId);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            payment.IsPaid = true;
-
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-            {
-                TempData["Message"] = "Payment processed successfully.";
-            }
-            else
-            {
-                AddErrors(result);
-            }
-
-            return RedirectToAction(nameof(OpenBills));
-        }
-
-
 
         // GET: Users
         // Restrict access to admins and librarians
@@ -319,6 +275,33 @@ namespace BiebWebApp.Controllers
             AddErrors(result);
             return View(user);
         }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MarkAsPaid(int id)
+        {
+            var user = await FindUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.HasPaid = true;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "Payment status updated successfully.";
+            }
+            else
+            {
+                AddErrors(result);
+            }
+
+            return RedirectToAction(nameof(Details), new { id });
+        }
+
 
         private List<SelectListItem> GetSubscriptionOptions()
         {

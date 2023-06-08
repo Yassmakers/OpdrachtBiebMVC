@@ -6,15 +6,15 @@
 {
     @if (Model.IsBlocked)
     {
-                <form asp-action="BlockAccount" asp-route-id="@Model.Id" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-success">Unblock Account</button>
-                </form>
+        <form asp-action="BlockAccount" asp-route-id="@Model.Id" method="post" class="d-inline">
+            <button type="submit" class="btn btn-success">Unblock Account</button>
+        </form>
     }
     else
     {
-                <form asp-action="BlockAccount" asp-route-id="@Model.Id" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-danger">Block Account</button>
-                </form>
+        <form asp-action="BlockAccount" asp-route-id="@Model.Id" method="post" class="d-inline">
+            <button type="submit" class="btn btn-danger">Block Account</button>
+        </form>
     }
 }
 
@@ -52,6 +52,19 @@
 <div>
     <a asp-action="Index" class="btn btn-primary">Return to Users</a>
 </div>
+
+<h4>Payment Status</h4>
+@if (!Model.HasPaid)
+{
+    <p>Payment Status: Not Paid</p>
+    <form asp-action="MarkAsPaid" asp-route-id="@Model.Id" method="post">
+        <button type="submit" class="btn btn-primary">Mark as Paid</button>
+    </form>
+}
+else
+{
+    <p>Payment Status: Paid</p>
+}
 
 @functions {
     public string GetSubscriptionTypeName(string subscriptionType)

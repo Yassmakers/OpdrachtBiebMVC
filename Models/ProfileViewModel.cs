@@ -14,7 +14,7 @@ namespace BiebWebApp.Models
         public bool HasSubscription { get; set; } // subscribit
         public decimal SubscriptionCharge { get; set; }
         public decimal TotalReservationCharge { get; set; }
-
+        public bool HasPaid { get; set; } // Add this property to indicate payment status
         public string SubscriptionType { get; set; } // Add this property to store the subscription type
     }
 }

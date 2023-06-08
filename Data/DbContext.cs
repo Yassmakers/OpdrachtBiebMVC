@@ -16,8 +16,6 @@ namespace BiebWebApp.Data
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Location> Locations { get; set; }
 
-        public DbSet<Payment> Payments { get; set; }
-
         public BiebWebAppContext(DbContextOptions<BiebWebAppContext> options)
             : base(options)
         {

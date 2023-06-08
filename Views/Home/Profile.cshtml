@@ -91,3 +91,12 @@ else
 {
     <p>No fines yet.</p>
 }
+
+@if (!Model.User.HasPaid)
+{
+    <div class="message error">You haven't paid yet.</div>
+}
+else
+{
+    <div class="message success">You have paid.</div>
+}

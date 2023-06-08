@@ -85,7 +85,8 @@
                     ReservationFine = reservationFine, // Set the reservation fine property
                     ReservationCharge = reservationCharge, // Set the reservation charge property
                     SubscriptionCharge = subscriptionCharge,
-                    TotalReservationCharge = totalReservationCharge // Set the total reservation charge property
+                    TotalReservationCharge = totalReservationCharge, // Set the total reservation charge property
+                            HasPaid = user.HasPaid // Set the HasPaid property
                 };
 
                 ViewBag.HasSubscription = hasSubscription;
@@ -96,11 +97,7 @@
 
 
 
-
-
-
-
-            public string GetSubscriptionTypeName(string subscriptionType)
+        public string GetSubscriptionTypeName(string subscriptionType)
             {
                 switch (subscriptionType)
                 {
@@ -729,12 +726,12 @@
                 return RedirectToAction(nameof(Profile));
             }
 
-        
        
 
 
 
-            [Authorize]
+
+        [Authorize]
             [HttpPost]
             [ValidateAntiForgeryToken]
             public IActionResult Delete(int? id)
