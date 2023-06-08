@@ -82,12 +82,6 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="filterDropdown">
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "" })">All</a>
-            @*<div class="dropdown-divider"></div>
-            <h6 class="dropdown-header">Location</h6>
-            @foreach (var location in ViewBag.Locations)
-            {
-                <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = location.LocationName })">@location.LocationName</a>
-            }*@
             <div class="dropdown-divider"></div>
             <h6 class="dropdown-header">Type</h6>
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "Book" })">Book</a>
@@ -96,27 +90,25 @@
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "DVD" })">DVD</a>
             <!-- Add more options for other item types -->
         </div>
+        <form method="get" action="@Url.Action("Index", "Home")" class="ml-3">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Filter by year:</span>
+                </div>
+                <input type="text" class="form-control font-weight-bold" placeholder="Enter years" name="yearFilter" value="@ViewData["yearFilter"]">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Filter</button>
+                </div>
+            </div>
+
+</form>
     </div>
 
-   @*@* <div class="input-group mb-3" style="margin-bottom: 0;">
-        <div class="input-group-prepend">
-            <span class="input-group-text">Filter by location:</span>
-        </div>
-        @*<select class="form-control form-control-sm" id="locationFilterInput">
-            <option value="">-- Select Location --</option>
-            @foreach (var location in ViewBag.Locations)
-            {
-                <option value="@location.LocationName">@location.LocationName</option>
-            }
-        </select>*@
-       @* <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" id="locationFilterBtn">Apply Filter</button>
-        @*</div>*@
     
 
     <form method="get" action="@Url.Action("Index", "Home")">
         <div class="input-group mb-3">
-            <input type="text" class="form-control font-weight-bold" placeholder="Search items on Title/Author/Year/Location..." name="searchString" value="@ViewData["searchString"]">
+            <input type="text" class="form-control font-weight-bold" placeholder="Search items on Title/Author/Location..." name="searchString" value="@ViewData["searchString"]">
             <div class="input-group-append">
                 <button class="btn btn-outline-secondary" type="submit">Search</button>
             </div>

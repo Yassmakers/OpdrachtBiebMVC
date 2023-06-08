@@ -1,5 +1,6 @@
 ﻿using BiebWebApp.Data;
 using BiebWebApp.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,26 +14,37 @@ namespace BiebWebApp.Controllers
     {
         private readonly BiebWebAppContext _context;
 
-        public LoansController(BiebWebAppContext context)
+        private readonly UserManager<User> _userManager;
+
+        public LoansController(BiebWebAppContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Loans
         public async Task<IActionResult> Index(string searchString)
         {
-            var loansQuery = _context.Loans.Include(l => l.User).Include(l => l.Item);
-
-            if (!string.IsNullOrEmpty(searchString))
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null && (user.Type == UserType.Administrator || user.Type == UserType.Librarian))
             {
-                loansQuery = loansQuery.Where(l => l.User.Name.Contains(searchString) ||
-                                                   l.Item.Title.Contains(searchString))
-                                       .Include(l => l.Item);
+                var loansQuery = _context.Loans.Include(l => l.User).Include(l => l.Item);
+
+                if (!string.IsNullOrEmpty(searchString))
+                {
+                    loansQuery = loansQuery.Where(l => l.User.Name.Contains(searchString) ||
+                                                       l.Item.Title.Contains(searchString))
+                                           .Include(l => l.Item);
+                }
+
+                var loans = await loansQuery.ToListAsync();
+
+                return View(loans);
             }
-
-            var loans = await loansQuery.ToListAsync();
-
-            return View(loans);
+            else
+            {
+                return Content("This page is restricted for regular members.");
+            }
         }
 
 

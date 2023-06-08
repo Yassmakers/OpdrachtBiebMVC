@@ -190,48 +190,59 @@
 
 
 
-            public IActionResult Index(string searchString, string filter, string author, int? year)
+        public IActionResult Index(string searchString, string filter, string author, int? year, string location, int? yearFilter)
+        {
+            if (HttpContext.Request.Path == "/loans")
             {
-                if (HttpContext.Request.Path == "/loans")
+                // If the user is accessing the Loans page, return the view without updating item statuses
+                return View(new List<Item>());
+            }
+
+            IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                string searchStringUpper = searchString.ToUpper();
+                itemsQuery = itemsQuery.Where(item =>
+                    EF.Functions.Like(item.Title.ToUpper(), $"%{searchStringUpper}%") ||
+                    EF.Functions.Like(item.Author.ToUpper(), $"%{searchStringUpper}%") ||
+                    EF.Functions.Like(item.Location.ToUpper(), $"%{searchStringUpper}%"));
+            }
+
+            if (!string.IsNullOrEmpty(filter))
+            {
+                ItemType itemType;
+                if (Enum.TryParse(filter, out itemType))
                 {
-                    // If the user is accessing the Loans page, return the view without updating item statuses
-                    return View(new List<Item>());
+                    itemsQuery = itemsQuery.Where(item => item.ItemType == itemType);
                 }
+            }
 
-                IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
+            if (!string.IsNullOrEmpty(author))
+            {
+                itemsQuery = itemsQuery.Where(item =>
+                    item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
 
-                if (!string.IsNullOrEmpty(searchString))
-                {
-                    string searchStringUpper = searchString.ToUpper();
-                    itemsQuery = itemsQuery.Where(item =>
-                        EF.Functions.Like(item.Title.ToUpper(), $"%{searchStringUpper}%") ||
-                        EF.Functions.Like(item.Author.ToUpper(), $"%{searchStringUpper}%") ||
-                        EF.Functions.Like(item.Location.ToUpper(), $"%{searchStringUpper}%"));
-                }
+            if (year.HasValue)
+            {
+                itemsQuery = itemsQuery.Where(item => item.Year == year);
+            }
 
-                if (!string.IsNullOrEmpty(filter))
-                {
-                    ItemType itemType;
-                    if (Enum.TryParse(filter, out itemType))
-                    {
-                        itemsQuery = itemsQuery.Where(item => item.ItemType == itemType);
-                    }
-                }
+            if (yearFilter.HasValue)
+            {
+                itemsQuery = itemsQuery.Where(item => item.Year.ToString() == yearFilter.Value.ToString());
+            }
 
-                if (!string.IsNullOrEmpty(author))
-                {
-                    itemsQuery = itemsQuery.Where(item =>
-                        item.Author.IndexOf(author, StringComparison.OrdinalIgnoreCase) >= 0);
-                }
+            if (!string.IsNullOrEmpty(location))
+            {
+                itemsQuery = itemsQuery.Where(item =>
+                    item.Location.IndexOf(location, StringComparison.OrdinalIgnoreCase) >= 0);
+            }
 
-                if (year.HasValue)
-                {
-                    itemsQuery = itemsQuery.Where(item => item.Year == year);
-                }
+            var items = itemsQuery.ToList();
 
-                var items = itemsQuery.ToList();
-
-                foreach (var item in items)
+            foreach (var item in items)
                 {
                     var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
 
@@ -662,10 +673,11 @@
 
         private bool ExceedsLoanLimit(User user, int maxLoanLimit)
         {
-            var activeLoansCount = _context.Loans
-                .Count(l => l.UserId == user.Id && l.ReturnDate < DateTime.Now);
+            var loans = _context.Loans
+                .Where(l => l.UserId == user.Id && l.ReturnDate >= DateTime.Now)
+                .ToList();
 
-            return activeLoansCount >= maxLoanLimit && user.SubscriptionType != "4";
+            return loans.Count >= maxLoanLimit;
         }
 
         private int GetMaxLoanLimit(string subscriptionType)
@@ -675,13 +687,11 @@
                 switch (type)
                 {
                     case 1: // Youth Subscription
-                        return 10; // Loan limit is 10
                     case 2: // Budget Subscription
-                        return 10; // Loan limit is 10
                     case 3: // Basic Subscription
                         return 10; // Loan limit is 10
                     case 4: // Top Subscription
-                        return 20; // Update the loan limit to 20
+                        return 20; // Loan limit is 20
                     default:
                         return 0;
                 }
@@ -689,6 +699,7 @@
 
             return 0;
         }
+
 
 
 

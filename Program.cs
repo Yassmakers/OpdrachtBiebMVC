@@ -56,11 +56,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Home/AccessDenied";
     });
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole(UserType.Administrator.ToString()));
-    options.AddPolicy("RequireLibrarianRole", policy => policy.RequireRole(UserType.Librarian.ToString(), UserType.Administrator.ToString()));
-});
 
 // Configure endpoints
 builder.Services.ConfigureApplicationCookie(options =>

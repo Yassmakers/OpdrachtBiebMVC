@@ -1,5 +1,6 @@
 ﻿using BiebWebApp.Data;
 using BiebWebApp.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,21 +13,37 @@ namespace BiebWebApp.Controllers
     {
         private readonly BiebWebAppContext _context;
 
-        public ReservationsController(BiebWebAppContext context)
+        private readonly UserManager<User> _userManager;
+
+        public ReservationsController(BiebWebAppContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
+
+
+
+        // GET: Reservations
         // GET: Reservations
         public async Task<IActionResult> Index()
         {
-            var reservations = await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Item)
-                .ToListAsync();
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null && (user.Type == UserType.Administrator || user.Type == UserType.Librarian))
+            {
+                var reservations = await _context.Reservations
+                    .Include(r => r.User)
+                    .Include(r => r.Item)
+                    .ToListAsync();
 
-            return View(reservations);
+                return View(reservations);
+            }
+            else
+            {
+                return Content("This page is restricted for regular members.");
+            }
         }
+
 
         // GET: Reservations/Details/5
         public async Task<IActionResult> Details(int? id)

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace BiebWebApp.Models
 {
@@ -13,6 +14,7 @@ namespace BiebWebApp.Models
         public UserType Type { get; set; } // UserType enum
         public virtual ICollection<Reservation> Reservations { get; set; }
         public virtual ICollection<Loan> Loans { get; set; }
+        public virtual ICollection<Payment> Payments { get; set; } // Added Payments navigation property
         public bool IsBlocked { get; set; }
         public bool HasSubscription { get; set; }
         public string SubscriptionType { get; set; } // Added subscription type field

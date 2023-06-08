@@ -1,0 +1,36 @@
+﻿@model IEnumerable<BiebWebApp.Models.Payment>
+
+@{
+    ViewData["Title"] = "Open Payments";
+}
+
+<h1>Open Payments</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Payment ID</th>
+            <th>Amount</th>
+            <th>Paid</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr>
+                <td>@payment.Id</td>
+                <td>@payment.Amount</td>
+                <td>@(payment.IsPaid ? "Yes" : "No")</td>
+                <td>
+                    @if (!payment.IsPaid)
+                    {
+                        <form asp-action="MarkPaymentAsPaid" asp-route-id="@payment.Id" method="post">
+                            <button type="submit" class="btn btn-primary">Mark as Paid</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

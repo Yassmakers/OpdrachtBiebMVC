@@ -4,6 +4,7 @@ using BiebWebApp.Data;
 using BiebWebApp.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace BiebWebApp.Controllers
 {
@@ -12,17 +13,28 @@ namespace BiebWebApp.Controllers
     {
         private readonly BiebWebAppContext _context;
 
-        public ItemsController(BiebWebAppContext context)
+        public ItemsController(BiebWebAppContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
+        private readonly UserManager<User> _userManager;
         // GET: Items
         public async Task<IActionResult> Index()
         {
-            var items = await _context.Items.ToListAsync();
-            return View(items);
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null && (user.Type == UserType.Administrator || user.Type == UserType.Librarian))
+            {
+                var items = await _context.Items.ToListAsync();
+                return View(items);
+            }
+            else
+            {
+                return Content("This page is restricted for regular members.");
+            }
         }
+
 
         // GET: Items/Details/5
         public async Task<IActionResult> Details(int? id)

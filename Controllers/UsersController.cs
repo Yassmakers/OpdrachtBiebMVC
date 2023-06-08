@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,30 +15,83 @@ using System.Threading.Tasks;
 
 namespace BiebWebApp.Controllers
 {
-    [Authorize]
+
+
     public class UsersController : Controller
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole<int>> _roleManager;
         private readonly ILogger<UsersController> _logger;
+        private readonly BiebWebAppContext _context;
 
-        public UsersController(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, ILogger<UsersController> logger)
+        public UsersController(UserManager<User> userManager, RoleManager<IdentityRole<int>> roleManager, ILogger<UsersController> logger, BiebWebAppContext context)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _logger = logger;
+            _context = context;
         }
+
+        public IActionResult OpenBills()
+        {
+            // Retrieve users with open bills from the database
+            var usersWithOpenBills = _context.Users
+                .Include(u => u.Payments)
+                .Where(u => u.Payments.Any(p => !p.IsPaid))
+                .ToList();
+
+            return View(usersWithOpenBills);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> PayBill(int userId, int paymentId)
+        {
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var payment = user.Payments.FirstOrDefault(p => p.Id == paymentId);
+            if (payment == null)
+            {
+                return NotFound();
+            }
+
+            payment.IsPaid = true;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["Message"] = "Payment processed successfully.";
+            }
+            else
+            {
+                AddErrors(result);
+            }
+
+            return RedirectToAction(nameof(OpenBills));
+        }
+
 
 
         // GET: Users
+        // Restrict access to admins and librarians
         public async Task<IActionResult> Index()
         {
-
-
-            var users = await _userManager.Users.ToListAsync();
-            return View(users);
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null && (user.Type == UserType.Administrator || user.Type == UserType.Librarian))
+            {
+                var users = await _userManager.Users.ToListAsync();
+                return View(users);
+            }
+            else
+            {
+                return Content("This page is restricted for regular members.");
+            }
         }
-
         private List<Location> GetLocations()
         {
             using (var context = new BiebWebAppContext(new DbContextOptions<BiebWebAppContext>()))
