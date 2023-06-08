@@ -1,0 +1,12 @@
+﻿@model BiebWebApp.Models.ViewModels.DeleteSubscriptionViewModel
+
+<h1>Delete Subscription</h1>
+
+<p>Are you sure you want to delete your subscription of type @Model.SubscriptionType?</p>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <button type="submit" class="btn btn-danger">Delete</button>
+}

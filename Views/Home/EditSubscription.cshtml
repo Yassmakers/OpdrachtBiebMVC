@@ -1,0 +1,21 @@
+﻿@model BiebWebApp.Models.ViewModels.EditSubscriptionViewModel
+
+<h1>Edit Subscription</h1>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        <label for="SubscriptionType">Subscription Type</label>
+        <select class="form-control" id="SubscriptionType" name="SubscriptionType">
+            <option value="1">Youth Subscription</option>
+            <option value="2">Budget Subscription</option>
+            <option value="3">Basic Subscription</option>
+            <option value="4">Top Subscription</option>
+        </select>
+        @Html.ValidationMessageFor(model => model.SubscriptionType)
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+}

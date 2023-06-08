@@ -6,6 +6,8 @@
     ViewData["Title"] = "Home Page";
     var _userManager = ViewBag.UserManager as UserManager<User>; // Retrieve the _userManager from the ViewBag
 
+    var currentUser = await _userManager.GetUserAsync(User);
+    var isAdminOrLibrarian = currentUser != null && (currentUser.Type == UserType.Administrator || currentUser.Type == UserType.Librarian);
 }
 
 
@@ -16,24 +18,30 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <style>
+    .quick-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .quick-link {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #007bff;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+</style>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - BiebWebApp</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-DmY81eYEhaI6FYdMUe0Iy1fDHTJvScbLytlx4xk8fOTPHh4+EaU4w+quDk9t4W2J" crossorigin="anonymous">
-    <style>
-        .extra-info {
-            display: none;
-        }
-
-            .extra-info.show {
-                display: table-row;
-            }
-
-        .details {
-            padding: 10px;
-            background-color: #f9f9f9;
-        }
-    </style>
+   
 </head>
 <body>
     @if (User.Identity.IsAuthenticated)
@@ -47,13 +55,27 @@
                 <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
                 <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
             </div>
-
             @if (TempData["Message"] != null)
             {
                 <div class="alert alert-success">
                     @TempData["Message"]
                 </div>
             }
+
+@if (isAdminOrLibrarian)
+{
+    <div class="text-center">
+        <h2>Quick Links</h2>
+        <div class="quick-links">
+            <a class="quick-link btn btn-primary" href="/users">Users</a>
+            <a class="quick-link btn btn-primary" href="/items">Items</a>
+            <a class="quick-link btn btn-primary" href="/reservations">Reservations</a>
+            <a class="quick-link btn btn-primary" href="/loans">Loans</a>
+            <a class="quick-link btn btn-primary" href="/home/subscriptionsindex">Subscriptions</a>
+        </div>
+    </div>
+}
+
         }
         else
         {
@@ -177,14 +199,7 @@
 
                         </td>
                     </tr>
-                    <tr class="extra-info">
-                        <td colspan="6">
-                            <div class="details">
-                                <p>Extra information about the item</p>
-                                <!-- Add extra information about the item here -->
-                            </div>
-                        </td>
-                    </tr>
+                   
                 }
             </tbody>
         </table>
