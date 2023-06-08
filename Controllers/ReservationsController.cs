@@ -66,47 +66,7 @@ namespace BiebWebApp.Controllers
             return View(reservation);
         }
 
-        // GET: Reservations/Create
-        public IActionResult Create(int itemId)
-        {
-            // Retrieve the item based on the provided itemId
-            var item = _context.Items.FirstOrDefault(i => i.Id == itemId);
-
-            if (item == null)
-            {
-                // Item not found, handle the error accordingly (e.g., show an error message, redirect, etc.)
-                return NotFound();
-            }
-
-            // Retrieve the users and pass them to the ViewBag
-            var users = _context.Users.Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.Name });
-            ViewBag.UserId = users;
-
-            var reservation = new Reservation
-            {
-                ItemId = item.Id,
-                Item = item
-            };
-
-            return View(reservation);
-        }
-
-        // POST: Reservations/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,ItemId,ReservationDate")] Reservation reservation)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(reservation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewBag.UserId = new SelectList(_context.Users, "Id", "Name", reservation.UserId);
-            ViewBag.ItemId = new SelectList(_context.Items, "Id", "Title", reservation.ItemId);
-            return View(reservation);
-        }
+       
 
         // GET: Reservations/Edit/5
         public async Task<IActionResult> Edit(int? id)

@@ -128,20 +128,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Loans/Edit.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcRWRpdC5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Loans/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Loans/Return.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTG9hbnNcUmV0dXJuLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Reservations/Create.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUmVzZXJ2YXRpb25zXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Reservations/Delete.cshtml]
