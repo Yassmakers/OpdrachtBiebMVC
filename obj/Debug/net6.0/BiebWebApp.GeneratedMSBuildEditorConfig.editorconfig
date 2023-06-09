@@ -40,24 +40,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXNcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/CreateSubscription.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxDcmVhdGVTdWJzY3JpcHRpb24uY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/Delete.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEZWxldGUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/DeleteSubscription.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEZWxldGVTdWJzY3JpcHRpb24uY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxEZXRhaWxzLmNzaHRtbA==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/EditSubscription.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxFZGl0U3Vic2NyaXB0aW9uLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/Index.cshtml]
@@ -90,10 +78,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/Subscribe.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTdWJzY3JpYmUuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Home/Subscriptionindex.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxTdWJzY3JpcHRpb25pbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/symon/source/repos/BiebWebApp/BiebWebApp/Views/Items/Create.cshtml]
