@@ -14,17 +14,21 @@
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Http;
 
-    namespace BiebWebApp.Controllers
+//Namespace for the controllers in the application.
+namespace BiebWebApp.Controllers
     {
-        public class HomeController : Controller
+    //The HomeController handles actions related to the home page and profile management.
+    public class HomeController : Controller
         {
-            private readonly BiebWebAppContext _context;
+        //These are private readonly fields used throughout the class.
+        private readonly BiebWebAppContext _context;
             private readonly UserManager<User> _userManager;
             private readonly SignInManager<User> _signInManager;
             private readonly ILogger<HomeController> _logger;
             private readonly RoleManager<IdentityRole<int>> _roleManager;
 
-            public HomeController(BiebWebAppContext context, UserManager<User> userManager, SignInManager<User> signInManager, ILogger<HomeController> logger, RoleManager<IdentityRole<int>> roleManager)
+        //Constructor for HomeController, setting up context, user and role managers, and logger.
+        public HomeController(BiebWebAppContext context, UserManager<User> userManager, SignInManager<User> signInManager, ILogger<HomeController> logger, RoleManager<IdentityRole<int>> roleManager)
             {
                 _context = context;
                 _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -33,23 +37,30 @@
                 _roleManager = roleManager;
             }
 
-            [HttpGet("profile")]
+        //Http GET action for retrieving user's profile.
+
+        [HttpGet("profile")]
             public IActionResult Profile()
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var user = _userManager.FindByIdAsync(userId).Result;
+            //Get user's ID.
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //Find the user with this ID.
+            var user = _userManager.FindByIdAsync(userId).Result;
 
-                if (user == null)
+            //If user is not found, return NotFound result.
+            if (user == null)
                 {
                     return NotFound();
                 }
 
-                if (user.IsBlocked)
+            //If user is blocked, log them out.
+            if (user.IsBlocked)
                 {
                     return RedirectToAction(nameof(Logout));
                 }
 
-                var reservations = _context.Reservations
+            //Retrieve all reservations made by the user.
+            var reservations = _context.Reservations
                     .Include(r => r.User)
                     .Include(r => r.Item)
                     .Include(r => r.Loans)
@@ -57,13 +68,15 @@
                     .Where(r => r.UserId == user.Id)
                     .ToList();
 
-                var loans = _context.Loans
+            //Retrieve all loans that are overdue for the user.
+            var loans = _context.Loans
                     .Include(l => l.User)
                     .Include(l => l.Item)
                     .Where(l => l.UserId == user.Id && l.ReturnDate < DateTime.Now)
                     .ToList();
-
-                var hasSubscription = user.HasSubscription;
+           
+            //Determines if user has a subscription.
+            var hasSubscription = user.HasSubscription;
                 var subscriptionType = GetSubscriptionTypeName(user.SubscriptionType); // Get the subscription type name
 
                 var reservationFine = GetReservationFine(user.SubscriptionType);
@@ -75,7 +88,8 @@
 
                 var totalReservationCharge = reservations.Count * reservationCharge; // Calculate the total reservation charge
 
-                var model = new ProfileViewModel
+            //Create and populate ViewModel for the Profile view.
+            var model = new ProfileViewModel
                 {
                     User = user,
                     Reservations = reservations ?? new List<Reservation>(),
@@ -91,12 +105,13 @@
 
                 ViewBag.HasSubscription = hasSubscription;
 
-                return View(model);
+            //Return the Profile view populated with the model.
+            return View(model);
             }
 
 
 
-
+        //These helper methods determine subscription details based on subscription type.
         public string GetSubscriptionTypeName(string subscriptionType)
             {
                 switch (subscriptionType)
@@ -186,17 +201,20 @@
 
 
 
-
+        //Http GET action for the home page.
         public IActionResult Index(string searchString, string filter, string author, int? year, string location, int? yearFilter)
         {
+            //If the user is accessing the Loans page, return an empty view.
             if (HttpContext.Request.Path == "/loans")
             {
                 // If the user is accessing the Loans page, return the view without updating item statuses
                 return View(new List<Item>());
             }
 
+            //Create query to select all items.
             IQueryable<Item> itemsQuery = _context.Items.Include(i => i.Reservations);
 
+            //Filter items based on searchString, filter, author, year, and location.
             if (!string.IsNullOrEmpty(searchString))
             {
                 string searchStringUpper = searchString.ToUpper();
@@ -239,6 +257,7 @@
 
             var items = itemsQuery.ToList();
 
+            //Update the status of each item based on whether they are reserved or loaned.
             foreach (var item in items)
                 {
                     var reservation = _context.Reservations.FirstOrDefault(r => r.ItemId == item.Id);
@@ -260,12 +279,15 @@
                     }
                 }
 
-                _context.SaveChanges(); // Save changes to the database to update the item statuses
+            //Save the status updates to the database.
+            _context.SaveChanges();
 
-                ViewBag.HasSubscription = false; // Set the initial value of HasSubscription to false
-                ViewBag.UserManager = _userManager; // Add this line
+            //Set initial value of ViewBag.HasSubscription to false.
+            ViewBag.HasSubscription = false; 
+                ViewBag.UserManager = _userManager;
 
-                if (User.Identity.IsAuthenticated)
+            //If the user is logged in, update ViewBag.HasSubscription to reflect their subscription status.   
+            if (User.Identity.IsAuthenticated)
                 {
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     var user = _userManager.FindByIdAsync(userId).Result;
@@ -275,8 +297,8 @@
                         ViewBag.HasSubscription = user.HasSubscription; // Set the value of HasSubscription based on the user's subscription status
                     }
                 }
-
-                return View(items);
+            //Return the Index view populated with the items.
+            return View(items);
             }
 
 
@@ -290,26 +312,31 @@
 
 
 
-
-            [Authorize]
+        //Authorize attribute ensures that only logged-in users can reserve an item.
+        [Authorize]
             public IActionResult Reserve(int? id)
             {
-                if (id == null)
+            //Null id check.
+            if (id == null)
                 {
                     return NotFound();
                 }
 
-                var item = _context.Items.FirstOrDefault(i => i.Id == id);
+            //Find item based on id.
+            var item = _context.Items.FirstOrDefault(i => i.Id == id);
 
-                if (item == null)
+            //Null item check.
+            if (item == null)
                 {
                     return NotFound();
                 }
 
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //Get current user's ID and find the user.
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var user = _userManager.FindByIdAsync(userId).Result;
 
-                if (user == null)
+            //Null user check.
+            if (user == null)
                 {
                     return NotFound();
                 }
@@ -330,7 +357,8 @@
                     return RedirectToAction(nameof(Index));
                 }
 
-                var reservation = new Reservation
+            //Create new reservation for the user.
+            var reservation = new Reservation
                 {
                     UserId = user.Id,
                     ItemId = item.Id,
@@ -343,8 +371,8 @@
                 _context.Reservations.Add(reservation);
 
                 try
-                {
-                    _context.SaveChanges(); // Save changes to get the reservation ID
+            {        //Save changes to the context to create the reservation.
+                _context.SaveChanges(); 
                     _logger.LogInformation($"Reservation with ID {reservation.Id} created successfully.");
                 }
                 catch (Exception e)
@@ -359,26 +387,30 @@
             }
 
 
-
-            [Authorize]
+        //Authorize attribute ensures that only logged-in users can delete a reservation.
+        [Authorize]
             [HttpPost]
             [ValidateAntiForgeryToken]
             public IActionResult DeleteReservation(int? id)
             {
-                if (id == null)
+            //Null id check.
+            if (id == null)
                 {
                     return NotFound();
                 }
 
-                var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
+            //Find reservation based on id.
+            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
 
                 if (reservation == null)
                 {
                     return NotFound();
                 }
 
-                _context.Reservations.Remove(reservation);
-                _context.SaveChanges();
+            //Remove reservation from the context.
+            _context.Reservations.Remove(reservation);
+            //Save changes to the context to delete the reservation.
+            _context.SaveChanges();
 
                 TempData["Message"] = "Reservation deleted successfully.";
 
@@ -386,53 +418,63 @@
             }
 
 
-            [HttpGet("profile/{id}")]
+        //Http GET action to display a user's profile based on id.
+        [HttpGet("profile/{id}")]
             public async Task<IActionResult> Profile(int id)
             {
-                var user = await _context.Users
+            //Find user based on id, including their reservations and loans.
+            var user = await _context.Users
                     .Include(u => u.Reservations)
                         .ThenInclude(r => r.Loans)
                     .FirstOrDefaultAsync(u => u.Id == id);
 
-                if (user == null)
+            //Null user check.
+            if (user == null)
                 {
                     return NotFound();
                 }
 
-                var viewModel = new ProfileViewModel
+            //Create and populate ViewModel for the Profile view.
+            var viewModel = new ProfileViewModel
                 {
                     User = user,
                     Reservations = user.Reservations.ToList()
                 };
 
-                return View(viewModel);
+            //Return the Profile view populated with the ViewModel.
+            return View(viewModel);
             }
 
 
-            [Authorize]
+        //Authorize attribute ensures that only logged-in users can view details of a reservation.
+        [Authorize]
             public IActionResult Details(int? id)
             {
-                if (id == null)
+            //Null id check.
+            if (id == null)
                 {
                     return NotFound();
                 }
 
-                var reservation = _context.Reservations
+            //Find reservation based on id, including the user and item related to it.
+            var reservation = _context.Reservations
                     .Include(r => r.User)
                     .Include(r => r.Item)
                     .FirstOrDefault(r => r.Id == id);
 
-                if (reservation == null)
+            //Null reservation check.
+            if (reservation == null)
                 {
                     return NotFound();
                 }
 
-                return View(reservation);
+            //Return the Details view populated with the reservation.
+            return View(reservation);
             }
 
 
-
-            [HttpGet]
+        //Http GET action for the login page.
+        [HttpGet]
             public IActionResult Login()
             {
                 // Here, i've chosen to use my own custom login logic instead of the default 
@@ -445,8 +487,8 @@
                 return View();
             }
 
-
-            public IActionResult Register()
+        //Http GET action for the registration page.
+        public IActionResult Register()
             {
                 // Similar to the login, i've implemented a custom registration process instead 
                 // of the automatic one provided by the 'Individual accounts' option. This allows 
@@ -455,44 +497,51 @@
                 return View();
             }
 
-            [HttpPost]
+        //Http POST action to handle the registration process.
+        [HttpPost]
             public async Task<IActionResult> Register(RegisterModel model)
             {
-                // This method handles the registration process. I use the User Manager from 
-                // the Identity library to create a new user. By implementing the registration 
-                // process ourselves, i gain the ability to add extra steps or checks that are 
-                // specific to our application. My choice to implement a custom registration 
-                // process is based on the requirements of the project and is not a decision made 
-                // out of convenience. 
-                if (ModelState.IsValid)
+            // This method handles the registration process. I use the User Manager from 
+            // the Identity library to create a new user. By implementing the registration 
+            // process ourselves, i gain the ability to add extra steps or checks that are 
+            // specific to our application. My choice to implement a custom registration 
+            // process is based on the requirements of the project and is not a decision made 
+            // out of convenience. 
+
+            //Model validation check.
+            if (ModelState.IsValid)
                 {
-                    User user = new User { UserName = model.Email, Name = model.Name, Email = model.Email, Type = model.Type };
+                //Create new user with provided details.
+                User user = new User { UserName = model.Email, Name = model.Name, Email = model.Email, Type = model.Type };
                     IdentityResult result;
 
-                    try
+                try
+                {
+                    //Attempt to create the user.
+                    result = await _userManager.CreateAsync(user, model.Password);
+                    if (result == null)
                     {
-                        result = await _userManager.CreateAsync(user, model.Password);
-                        if (result == null)
-                        {
-                            _logger.LogError("User creation result is null.");
-                            ModelState.AddModelError("", "User creation failed.");
-                            return View(model);
-                        }
-                    }
-                    catch (DbUpdateException ex)
-                    {
-                        _logger.LogError(ex, $"An error occurred while creating the user. Failed entities: {string.Join(", ", ex.Entries.Select(e => e.Entity.GetType().Name))}");
-
-                        if (ex.InnerException != null)
-                        {
-                            _logger.LogError(ex.InnerException, $"Inner exception details:");
-                        }
-
-                        ModelState.AddModelError("", "An error occurred while creating the user.");
+                        _logger.LogError("User creation result is null.");
+                        ModelState.AddModelError("", "User creation failed.");
                         return View(model);
                     }
+                }
+                catch (DbUpdateException ex)
+                {
+                    //Log error and return view with model if there was an exception.
+                    _logger.LogError(ex, $"An error occurred while creating the user. Failed entities: {string.Join(", ", ex.Entries.Select(e => e.Entity.GetType().Name))}");
 
-                    if (result.Succeeded)
+                    if (ex.InnerException != null)
+                    {
+                        _logger.LogError(ex.InnerException, $"Inner exception details:");
+                    }
+
+                    ModelState.AddModelError("", "An error occurred while creating the user.");
+                    return View(model);
+                }
+
+                //If user creation succeeded, assign them a role and sign them in. Otherwise, add errors to the model state.
+                if (result.Succeeded)
                     {
                         TempData["Message"] = "User created successfully.";
 
@@ -525,7 +574,8 @@
                     }
                 }
 
-                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            //Add model errors to model state and return view with model.
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
                 {
                     ModelState.AddModelError("", error.ErrorMessage);
                 }
