@@ -3,18 +3,40 @@ using System.Collections.Generic;
 
 namespace BiebWebApp.Models
 {
+    // View model representing the user profile
     public class ProfileViewModel
     {
+        // The user information
         public User User { get; set; }
+
+        // The list of reservations for the user
         public List<Reservation> Reservations { get; set; }
-        public List<Loan> Loans { get; set; } // Add a list of Loans
+
+        // The list of loans for the user
+        public List<Loan> Loans { get; set; }
+
+        // The fine amount for reservations
         public decimal ReservationFine { get; set; }
+
+        // The charge amount for reservations
         public decimal ReservationCharge { get; set; }
+
+        // The fine amount per day for reservations
         public decimal FinePerDay { get; set; }
-        public bool HasSubscription { get; set; } // subscribit
+
+        // Indicates whether the user has a subscription
+        public bool HasSubscription { get; set; }
+
+        // The charge amount for the subscription
         public decimal SubscriptionCharge { get; set; }
+
+        // The total charge amount for reservations
         public decimal TotalReservationCharge { get; set; }
-        public bool HasPaid { get; set; } // Add this property to indicate payment status
-        public string SubscriptionType { get; set; } // Add this property to store the subscription type
+
+        // Indicates whether the user has paid
+        public bool HasPaid { get; set; }
+
+        // The subscription type of the user
+        public string SubscriptionType { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BiebWebApp.Models;
 namespace BiebWebApp.Models
 {
+    // Enumeration representing the type of an item
     public enum ItemType
     {
         Book,
@@ -9,6 +10,7 @@ namespace BiebWebApp.Models
         DVD
     }
 
+    // Enumeration representing the status of an item
     public enum ItemStatus
     {
         Available,
@@ -16,7 +18,7 @@ namespace BiebWebApp.Models
         Loaned
     }
 
-
+    // Enumeration representing the type of an invoice
     public enum InvoiceType
     {
         SubscriptionFee,
@@ -25,6 +27,7 @@ namespace BiebWebApp.Models
         Fine
     }
 
+    // Enumeration representing the type of a user
     public enum UserType
     {
         Member,

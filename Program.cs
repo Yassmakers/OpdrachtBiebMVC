@@ -18,23 +18,25 @@ var builder = WebApplication.CreateBuilder(args);
 // Configure services
 builder.Services.AddControllersWithViews();
 
-// Get the student number and replace S0000000 with it
+// Got my student number and replaced the S0000000 placeholder with it
 string studentNumber = "S1188088";
 string connectionString = $"Server=(localdb)\\mssqllocaldb;Database=Bibliotheek{studentNumber};Trusted_Connection=True;MultipleActiveResultSets=true";
 
 builder.Services.AddDbContext<BiebWebAppContext>(options =>
 {
-    options.UseSqlServer(connectionString,
-        sqlOptions =>
-        {
-            sqlOptions.EnableRetryOnFailure();
-            sqlOptions.CommandTimeout(30); // Set the timeout value (in seconds) as needed
-        });
+    // Configure the database context to use SQL Server and set the connection string
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure();
+        sqlOptions.CommandTimeout(30); // Set the timeout value (in seconds) as needed
+    });
+
     options.EnableSensitiveDataLogging(); // Enable sensitive data logging
 });
 
 builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 {
+    // Configure the identity options
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
@@ -51,6 +53,7 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
+        // Configure the cookie authentication options
         options.LoginPath = "/Home/Login";
         options.LogoutPath = "/Home/Logout";
         options.AccessDeniedPath = "/Home/AccessDenied";
@@ -60,6 +63,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Configure endpoints
 builder.Services.ConfigureApplicationCookie(options =>
 {
+    // Configure the application cookie options
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
     options.SlidingExpiration = true;
 });

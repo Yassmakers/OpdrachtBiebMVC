@@ -24,7 +24,6 @@ namespace BiebWebApp.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-
             var faker = new Faker();
 
             // Generate fake items
@@ -200,12 +199,9 @@ namespace BiebWebApp.Data
             }
             modelBuilder.Entity<Location>().HasData(locations);
 
-          
-
-            // Rest of the code...
-
             base.OnModelCreating(modelBuilder);
         }
+
 
     }
 }
