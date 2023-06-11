@@ -583,63 +583,76 @@ namespace BiebWebApp.Controllers
                 return View(model);
             }
 
-            [HttpPost]
+        // Http POST action to handle the login process
+
+        [HttpPost]
             public async Task<IActionResult> Login(LoginModel model)
             {
-                // This method handles the login process. The User Manager from the Identity 
-                // library is used to find the user and validate their credentials. 
-                // This custom approach allows us to add additional checks or modifications as 
-                // needed, enhancing the flexibility of our application.
-                // I fully understand this diverges from the original assignment requirements, 
-                // but i do believe this approach provides a more adaptable solution to manage 
-                // user authentication while maintaining security standards.
+            // This method handles the login process. The User Manager from the Identity 
+            // library is used to find the user and validate their credentials. 
+            // This custom approach allows us to add additional checks or modifications as 
+            // needed, enhancing the flexibility of our application.
+            // I fully understand this diverges from the original assignment requirements, 
+            // but i do believe this approach provides a more adaptable solution to manage 
+            // user authentication while maintaining security standards.
 
-                if (ModelState.IsValid)
+            // Model validation check
+            if (ModelState.IsValid)
                 {
                     _logger.LogInformation($"Attempting to find user with email {model.Email}.");
-                    var user = await _userManager.FindByEmailAsync(model.Email);
+                // Find the user with the email provided
+                var user = await _userManager.FindByEmailAsync(model.Email);
                     if (user != null)
                     {
                         _logger.LogInformation($"User {user.UserName} found. Attempting to sign in.");
-                        var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
+                    // Try to sign in the user
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
                         if (result.Succeeded)
                         {
                             _logger.LogInformation($"User {user.UserName} successfully logged in.");
-                            return RedirectToAction("Index", "Home");
+                        // User signed in successfully, redirect to Home
+                        return RedirectToAction("Index", "Home");
                         }
                         else
                         {
                             _logger.LogWarning($"Failed to log in user {user.UserName}. Sign-in result: {result}");
-                            ModelState.AddModelError("", "Invalid login attempt.");
+                        // Login attempt failed, show error
+                        ModelState.AddModelError("", "Invalid login attempt.");
                             return View(model);
                         }
                     }
                     else
                     {
                         _logger.LogWarning($"Failed to find user with email {model.Email}.");
-                        ModelState.AddModelError("", "Invalid login attempt.");
-                        return View(model);
+                    // User not found, show error
+                    ModelState.AddModelError("", "Invalid login attempt.");
+                    // Model state invalid, return same view
+                    return View(model);
                     }
                 }
 
                 return View(model);
             }
 
-            public async Task<IActionResult> Logout()
+        // Action to handle user logout
+        public async Task<IActionResult> Logout()
             {
-                await _signInManager.SignOutAsync();
+            // Sign out the current user
+            await _signInManager.SignOutAsync();
                 return RedirectToAction("Index", "Home");
             }
 
-
+        // Authorize attribute ensures that only logged-in users can create a loan
         [Authorize]
         public IActionResult Loan(int? id)
         {
+            // Null id check
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Find the current user
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = _userManager.FindByIdAsync(userId).Result;
 
@@ -648,10 +661,12 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
+            // Find the reservation the user wants to loan
             var reservation = _context.Reservations
                 .Include(r => r.Item)
                 .FirstOrDefault(r => r.Id == id && r.UserId == user.Id);
 
+            // Null reservation check
             if (reservation == null)
             {
                 return NotFound();
@@ -686,6 +701,7 @@ namespace BiebWebApp.Controllers
                 return RedirectToAction(nameof(Profile));
             }
 
+            // Create a new loan
             var loan = new Loan
             {
                 UserId = user.Id,
@@ -696,6 +712,7 @@ namespace BiebWebApp.Controllers
             };
 
             _logger.LogInformation($"Trying to create loan: {loan}");
+            // Add the new loan to the context
             _context.Loans.Add(loan);
 
             try
@@ -718,21 +735,26 @@ namespace BiebWebApp.Controllers
         }
 
 
+        // Helper method to check if user has exceeded their loan limit
         private bool ExceedsLoanLimit(User user, int maxLoanLimit)
         {
+            // Query database for active loans of the user
             var loans = _context.Loans
                 .Where(l => l.UserId == user.Id && l.ReturnDate >= DateTime.Now)
                 .ToList();
 
+            // Check if the number of active loans is greater than or equal to max loan limit
             return loans.Count >= maxLoanLimit;
         }
 
+        // Helper method to determine the max loan limit based on user's subscription type
         private int GetMaxLoanLimit(string subscriptionType)
         {
             if (int.TryParse(subscriptionType, out int type))
             {
                 switch (type)
                 {
+                    // For subscription types 1, 2 and 3, loan limit is 10
                     case 1: // Youth Subscription
                     case 2: // Budget Subscription
                     case 3: // Basic Subscription
@@ -743,7 +765,7 @@ namespace BiebWebApp.Controllers
                         return 0;
                 }
             }
-
+            // If subscription type is not recognized, return 0 as loan limit
             return 0;
         }
 
@@ -753,7 +775,7 @@ namespace BiebWebApp.Controllers
 
 
 
-
+        // Action to handle subscription process *extra
 
         [Authorize]
             [HttpGet, HttpPost]
@@ -776,11 +798,11 @@ namespace BiebWebApp.Controllers
                 return RedirectToAction(nameof(Profile));
             }
 
-       
 
 
 
 
+        // Action to handle the deletion of a reservation **Extra rm later
         [Authorize]
             [HttpPost]
             [ValidateAntiForgeryToken]
@@ -790,15 +812,15 @@ namespace BiebWebApp.Controllers
                 {
                     return NotFound();
                 }
-
-                var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
+            // Find the reservation using id
+            var reservation = _context.Reservations.FirstOrDefault(r => r.Id == id);
 
                 if (reservation == null)
                 {
                     return NotFound();
                 }
-
-                _context.Reservations.Remove(reservation);
+            // Remove the reservation from the context
+            _context.Reservations.Remove(reservation);
                 _context.SaveChanges();
 
                 TempData["Message"] = "Reservation deleted successfully.";

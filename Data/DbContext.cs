@@ -13,7 +13,6 @@ namespace BiebWebApp.Data
         public DbSet<Item> Items { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Loan> Loans { get; set; }
-        public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Location> Locations { get; set; }
 
         public BiebWebAppContext(DbContextOptions<BiebWebAppContext> options)
@@ -201,19 +200,7 @@ namespace BiebWebApp.Data
             }
             modelBuilder.Entity<Location>().HasData(locations);
 
-            // Generate fake invoices
-            var invoices = new List<Invoice>();
-            for (int i = 1; i <= 50; i++)
-            {
-                var invoice = new Invoice
-                {
-                    Id = i,
-                    UserId = faker.Random.Int(1, 3),
-                    Amount = faker.Finance.Amount(10, 100),
-                };
-                invoices.Add(invoice);
-            }
-            modelBuilder.Entity<Invoice>().HasData(invoices);
+          
 
             // Rest of the code...
 
