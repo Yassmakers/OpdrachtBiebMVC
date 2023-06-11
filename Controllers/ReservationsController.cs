@@ -25,7 +25,7 @@ namespace BiebWebApp.Controllers
 
 
         // GET: Reservations
-        // GET: Reservations
+        // Displays the list of reservations.
         public async Task<IActionResult> Index()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -46,6 +46,7 @@ namespace BiebWebApp.Controllers
 
 
         // GET: Reservations/Details/5
+        // Displays the details of a specific reservation.
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -66,9 +67,10 @@ namespace BiebWebApp.Controllers
             return View(reservation);
         }
 
-       
+
 
         // GET: Reservations/Edit/5
+        // Displays the reservation edit form for a specific reservation.
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -94,6 +96,7 @@ namespace BiebWebApp.Controllers
         }
 
         // POST: Reservations/Edit/5
+        // Updates the reservation details based on the form data.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,ItemId,ReservationDate")] Reservation reservation)
@@ -131,6 +134,7 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Reservations/Delete/5
+        // Displays the reservation delete confirmation page for a specific reservation.
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -157,6 +161,7 @@ namespace BiebWebApp.Controllers
         }
 
         // POST: Reservations/Delete/5
+        // Deletes a reservation based on the confirmation and updates the database.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

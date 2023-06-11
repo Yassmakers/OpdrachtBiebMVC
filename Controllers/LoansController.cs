@@ -23,13 +23,16 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans
+        // Displays the list of loans, with optional search functionality.
         public async Task<IActionResult> Index(string searchString)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user != null && (user.Type == UserType.Administrator || user.Type == UserType.Librarian))
             {
+                // Query all loans, including related user and item entities
                 var loansQuery = _context.Loans.Include(l => l.User).Include(l => l.Item);
 
+                // Apply search filter if search string is provided
                 if (!string.IsNullOrEmpty(searchString))
                 {
                     loansQuery = loansQuery.Where(l => l.User.Name.Contains(searchString) ||
@@ -49,6 +52,7 @@ namespace BiebWebApp.Controllers
 
 
         // GET: Loans/Details/5
+        // Displays the details of a specific loan.
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -68,9 +72,10 @@ namespace BiebWebApp.Controllers
             return View(loan);
         }
 
-       
+
 
         // GET: Loans/Edit/5
+        // Displays the loan edit form for a specific loan.
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -89,6 +94,7 @@ namespace BiebWebApp.Controllers
         }
 
         // POST: Loans/Edit/5
+        // Updates the loan details based on the form data.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,ItemId,LoanDate,ReturnDate")] Loan loan)
@@ -124,6 +130,7 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans/Delete/5
+        // Displays the loan delete confirmation page for a specific loan.
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -144,6 +151,7 @@ namespace BiebWebApp.Controllers
         }
 
         // GET: Loans/Return/5
+        // Marks a loan as returned and updates associated entities.
         public async Task<IActionResult> Return(int? id)
         {
             if (id == null)
@@ -160,6 +168,7 @@ namespace BiebWebApp.Controllers
                 return NotFound();
             }
 
+            // Set the return date to the current date and time
             loan.ReturnDate = DateTime.Now;
 
             var item = loan.Item;
@@ -188,6 +197,7 @@ namespace BiebWebApp.Controllers
 
 
         // POST: Loans/Delete/5
+        // Deletes a loan based on the confirmation and updates the database.
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
