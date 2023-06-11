@@ -48,7 +48,7 @@
                         @if (user != null && user.Type == UserType.Administrator)
                     {
                         @Html.ActionLink("Delete", "Delete", new { id = loan.Id })
-                    }> |
+                    } |
                         <a asp-action="Return" asp-route-id="@loan.Id">Return Item</a> <!-- Added the "Return Item" button -->
                     </td>
                 </tr>
