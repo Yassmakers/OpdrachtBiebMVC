@@ -32,6 +32,7 @@ namespace BiebWebApp.Models
         public string ConfirmPassword { get; set; }
 
         // The selected subscription option for the user
+        [Required(ErrorMessage = "Please select a subscription.")]
         public int SelectedSubscription { get; set; }
 
         // The list of subscription options for the user to choose from

@@ -1,7 +1,11 @@
-﻿@model IEnumerable<BiebWebApp.Models.Reservation>
-
+﻿@using Microsoft.AspNetCore.Identity
+@model IEnumerable<BiebWebApp.Models.Reservation>
+@inject UserManager<User> UserManager
 <h1>Reservations</h1>
 
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
 <p>
     <a id="createReservationButton" class="btn btn-primary">Reserve Item</a>
 </p>
@@ -24,7 +28,10 @@
                 <td>@item.ReservationDate</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @if (user != null && user.Type == UserType.Administrator)
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    }
                 </td>
             </tr>
         }

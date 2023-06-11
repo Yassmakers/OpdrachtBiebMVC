@@ -1,10 +1,23 @@
-﻿@model BiebWebApp.Models.EditUserModel
+﻿@using Microsoft.AspNetCore.Identity
+@model BiebWebApp.Models.EditUserModel
+
+@inject UserManager<User> UserManager
 
 <h2>Edit User</h2>
+
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email)
+        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger" })
+    </div>
 
     <div class="form-group">
         @Html.LabelFor(m => m.Name)
@@ -12,16 +25,26 @@
         @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
     </div>
 
-    <div class="form-group">
-        @Html.LabelFor(m => m.Type)
-        @Html.DropDownListFor(m => m.Type, Enum.GetValues(typeof(UserType)).Cast<UserType>().Select(x => new SelectListItem
+    @if (user != null && user.Type == UserType.Administrator)
+    {
+        <div class="form-group">
+            @Html.LabelFor(m => m.Type)
+            @Html.DropDownListFor(m => m.Type, Enum.GetValues(typeof(UserType)).Cast<UserType>().Select(x => new SelectListItem
     {
     Text = x.ToString(),
     Value = ((int)x).ToString(),
     Selected = (Model.Type == x)
     }), "Select Type", new { @class = "form-control" })
-        @Html.ValidationMessageFor(m => m.Type, "", new { @class = "text-danger" })
-    </div>
+            @Html.ValidationMessageFor(m => m.Type, "", new { @class = "text-danger" })
+        </div>
+    }
+    else if (user != null && user.Type == UserType.Librarian)
+    {
+        <div class="form-group">
+            @Html.LabelFor(m => m.Type)
+            @Html.TextBoxFor(m => m.Type, new { @class = "form-control", @readonly = "readonly" })
+        </div>
+    }
 
     <div class="form-group">
         @Html.LabelFor(m => m.SubscriptionType)

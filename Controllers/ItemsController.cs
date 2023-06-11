@@ -20,7 +20,7 @@ namespace BiebWebApp.Controllers
         }
 
         private readonly UserManager<User> _userManager;
-
+        
         // GET: Items
         // Displays the list of items if the user is an administrator or librarian.
         public async Task<IActionResult> Index()
@@ -245,11 +245,11 @@ namespace BiebWebApp.Controllers
         {
             // Find the item with the specified id
             var item = await _context.Items.FindAsync(id);
-
+            
             // Remove the item from the context and save changes to the database
             _context.Items.Remove(item);
             await _context.SaveChangesAsync();
-
+            
             return RedirectToAction(nameof(Index));
         }
 

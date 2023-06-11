@@ -36,13 +36,13 @@ namespace BiebWebApp.Controllers
         {
             // Retrieve the current user
             var user = await _userManager.GetUserAsync(User);
-            
+
             // Check if the user exists and is an admin or librarian
             if (user != null && (user.Type == UserType.Administrator || user.Type == UserType.Librarian))
             {
-                // Retrieve the list of users
-                var users = await _userManager.Users.ToListAsync();
-                
+                // Retrieve the list of users based on user role
+                var users = await GetUserListByRole(user);
+
                 // Pass the list of users to the view for rendering
                 return View(users);
             }
@@ -52,6 +52,26 @@ namespace BiebWebApp.Controllers
                 return Content("This page is restricted for regular members.");
             }
         }
+
+        // Helper method to retrieve the list of users based on user role
+       private async Task<IEnumerable<User>> GetUserListByRole(User user)
+{
+    if (user.Type == UserType.Librarian)
+    {
+        // For librarians, retrieve only members
+        return await _userManager.Users.Where(u => u.Type == UserType.Member).ToListAsync();
+    }
+    else if (user.Type == UserType.Administrator)
+    {
+        // For admins, retrieve all users
+        return await _userManager.Users.ToListAsync();
+    }
+    else
+    {
+        return Enumerable.Empty<User>();
+    }
+}
+
 
         // Helper method to retrieve a list of locations from the database
         private List<Location> GetLocations()
@@ -126,12 +146,14 @@ namespace BiebWebApp.Controllers
             return View("Register", model);
         }
 
+        // UsersController
+
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             // Find the user by ID
             var user = await FindUserById(id);
-            
+
             // If the user is not found, return a NotFound response
             if (user == null)
             {
@@ -143,14 +165,28 @@ namespace BiebWebApp.Controllers
             {
                 Id = user.Id,
                 Name = user.Name,
-                Type = user.Type,
-                SubscriptionType = user.SubscriptionType, // Set the SubscriptionType property
-                SubscriptionOptions = GetSubscriptionOptions() // Populate the SubscriptionOptions list
+                Email = user.Email,
+                SubscriptionType = user.SubscriptionType,
+                SubscriptionOptions = GetSubscriptionOptions()
             };
+
+            // If the user is a librarian, restrict the UserType options to Member
+            if (User.IsInRole("Librarian"))
+            {
+                model.Type = UserType.Member;
+                model.SubscriptionOptions.RemoveAll(option => option.Value != "1"); // Remove other subscription options
+            }
+            else
+            {
+                model.Type = user.Type;
+            }
 
             // Return the Edit view with the model
             return View(model);
         }
+
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -174,7 +210,7 @@ namespace BiebWebApp.Controllers
 
             // Find the user by ID
             var user = await _userManager.FindByIdAsync(id.ToString());
-            
+
             // If the user is not found, return a NotFound response
             if (user == null)
             {
@@ -184,6 +220,7 @@ namespace BiebWebApp.Controllers
 
             // Update the user properties based on the model
             user.Name = model.Name;
+            user.Email = model.Email; // Update the Email property
             user.Type = model.Type;
             user.SubscriptionType = model.SubscriptionType;
 
@@ -193,16 +230,16 @@ namespace BiebWebApp.Controllers
                 // Validate the new password using a PasswordValidator
                 var passwordValidator = new PasswordValidator<User>();
                 var result = await passwordValidator.ValidateAsync(_userManager, user, model.NewPassword);
-                
+
                 // If the password validation fails, log the error and add errors to the ModelState
                 if (!result.Succeeded)
                 {
                     _logger.LogError("Password validation failed: {0}", string.Join("; ", result.Errors.Select(e => e.Description)));
                     AddErrors(result);
-                    
+
                     // Repopulate subscription options in case of validation errors
                     model.SubscriptionOptions = GetSubscriptionOptions();
-                    
+
                     // Return the Edit view with the model
                     return View(model);
                 }
@@ -230,7 +267,7 @@ namespace BiebWebApp.Controllers
 
             // Repopulate subscription options in case of validation errors
             model.SubscriptionOptions = GetSubscriptionOptions();
-            
+
             // Return the Edit view with the model
             return View(model);
         }
@@ -326,16 +363,26 @@ namespace BiebWebApp.Controllers
         {
             // Find the user by ID
             var user = await FindUserById(id);
-            
+
             // If the user is not found, return a NotFound response
             if (user == null)
             {
                 return NotFound();
             }
 
+            // Check if there are any loans associated with the user
+            var loans = _context.Loans.Where(l => l.Reservation.User == user).ToList();
+
+            if (loans.Count > 0)
+            {
+                // Delete the loans associated with the user
+                _context.Loans.RemoveRange(loans);
+                await _context.SaveChangesAsync();
+            }
+
             // Delete the user using the UserManager
             var result = await _userManager.DeleteAsync(user);
-            
+
             // If the user deletion is successful, redirect to the Index action
             if (result.Succeeded)
             {
@@ -348,6 +395,7 @@ namespace BiebWebApp.Controllers
             // Return the Delete view with the user object
             return View(user);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -388,7 +436,6 @@ namespace BiebWebApp.Controllers
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Value = "0", Text = "No Subscription" },
                 new SelectListItem { Value = "1", Text = "Youth Subscription" },
                 new SelectListItem { Value = "2", Text = "Budget Subscription" },
                 new SelectListItem { Value = "3", Text = "Basic Subscription" },

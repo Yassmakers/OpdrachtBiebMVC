@@ -1,18 +1,28 @@
-﻿@model List<Item>
+﻿@using Microsoft.AspNetCore.Identity
+@model List<Item>
+
+@inject UserManager<User> UserManager
 
 <h2>Items</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<p>
-    @Html.ActionLink("Add Location", "CreateLocation")
+    @Html.ActionLink("Create New Item", "Create")
 </p>
 
+@{
+    var user = await UserManager.GetUserAsync(User);
+}
 
-<p>
-    @Html.ActionLink("Delete Location", "DeleteLocation")
-</p>
+@if (user != null && user.Type == UserType.Administrator)
+{
+    <p>
+        @Html.ActionLink("Add Location", "CreateLocation")
+    </p>
+    <p>
+        @Html.ActionLink("Delete Location", "DeleteLocation")
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
@@ -37,8 +47,11 @@
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id })
+                    @if (user != null && user.Type == UserType.Administrator)
+                    {
+                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                    }
                 </td>
             </tr>
         }
