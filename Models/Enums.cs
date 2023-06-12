@@ -18,14 +18,8 @@ namespace BiebWebApp.Models
         Loaned
     }
 
-    // Enumeration representing the type of an invoice
-    public enum InvoiceType
-    {
-        SubscriptionFee,
-        LoanFee,
-        ReservationFee,
-        Fine
-    }
+   
+  
 
     // Enumeration representing the type of a user
     public enum UserType
