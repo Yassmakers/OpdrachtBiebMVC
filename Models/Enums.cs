@@ -19,7 +19,7 @@ namespace BiebWebApp.Models
     }
 
    
-  
+ 
 
     // Enumeration representing the type of a user
     public enum UserType

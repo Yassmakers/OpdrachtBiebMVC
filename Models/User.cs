@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace BiebWebApp.Models
 {
-    // Custom user model that extends IdentityUser<int>
+    // Custom user model that extends IdentityUser<int> .
     public class User : IdentityUser<int>
     {
         // The name of the user
