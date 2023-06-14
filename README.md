@@ -3,6 +3,7 @@
 #### Handleiding voor de ASP.NET Core Web App Bibliotheekbeheersysteem
 #### Deze handleiding beschrijft de installatie en het gebruik van de Bibliotheekbeheersysteem-applicatie. Volg de onderstaande instructies om de applicatie op te zetten en te gebruiken.
 
+(Bekijk ook graag de aanvullende opmerkingen voor de beoordelaars.)
 Inhoudsopgave
 - <a href="#installatie" target="_new">Installatie</a>
 
@@ -147,13 +148,7 @@ https://gyazo.com/921f51f066f88ac326e27c5ab8af13b1
 
 # Aanvullende opmerkingen
 
-#### - Zorg ervoor dat je alle functionele en technische requirements zoals beschreven in de opdracht hebt geïmplementeerd.
-
-#### - Houd je aan de Microsoft coding conventions, met uitzondering van "Use parentheses to make clauses in an expression apparent."
-
-#### - Zorg ervoor dat je de applicatie kunt bouwen en uitvoeren zonder verdere aanpassingen.
-
-#### - Neem contact op met de docenten via de op BrightSpace vermelde GitHub Usernames voor eventuele vragen of problemen.
+#### - Ik wil graag vermelden dat ik dit project alleen heb gemaakt, omdat ik geen teamlid heb kunnen vinden en het gevoel had dat mijn vorige teamlid niet actief heeft bijgedragen. Het was jammer dat ik geen samenwerking kon ervaren en ik heb dit project daarom zonder hulp moeten bouwen. Ik hoop dat er begrip is voor deze situatie en dat er coulanter naar mijn individuele prestaties gekeken kan worden bij de beoordeling.
 
 > 👨‍🎓 **Yassine Messaoudi**
 >
