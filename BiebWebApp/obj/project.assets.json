@@ -4532,11 +4532,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\symon\\source\\repos\\BiebWebApp\\BiebWebApp\\BiebWebApp.csproj",
+      "projectUniqueName": "C:\\Users\\symon\\Source\\Repos\\OpdrachtBiebMVC\\BiebWebApp\\BiebWebApp.csproj",
       "projectName": "BiebWebApp",
-      "projectPath": "C:\\Users\\symon\\source\\repos\\BiebWebApp\\BiebWebApp\\BiebWebApp.csproj",
+      "projectPath": "C:\\Users\\symon\\Source\\Repos\\OpdrachtBiebMVC\\BiebWebApp\\BiebWebApp.csproj",
       "packagesPath": "C:\\Users\\symon\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\symon\\source\\repos\\BiebWebApp\\BiebWebApp\\obj\\",
+      "outputPath": "C:\\Users\\symon\\Source\\Repos\\OpdrachtBiebMVC\\BiebWebApp\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

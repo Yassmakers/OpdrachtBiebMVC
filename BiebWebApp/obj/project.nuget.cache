@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "X/k9Y4ooVKk0OX4C6bW7dMs2YqYCSfUXNxSq2JpDWkQxMHJkWajeYGa6BpNYPXPNWAc9GCWc5ktFFFL9ZXdC7A==",
+  "dgSpecHash": "Gi4sINYxWEy7dCXdTGzLr85thHUuLlh4b/xa7FYN5BuWWMu6nCqaeuwIjCobGF19ntoHXNjZ15zyxsSTtSisKQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\symon\\source\\repos\\BiebWebApp\\BiebWebApp\\BiebWebApp.csproj",
+  "projectFilePath": "C:\\Users\\symon\\Source\\Repos\\OpdrachtBiebMVC\\BiebWebApp\\BiebWebApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\symon\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\symon\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
