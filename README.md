@@ -78,7 +78,7 @@ Na het uitvoeren van de database migratie, kunt u het project opnieuw compileren
 
 ### Inloggen
 
-- #### Open de applicatie en u ziet het inlogscherm.
+- #### Open de applicatie en u ziet het beginscherm met eronder staan login.
 
 - #### Voer uw e-mailadres in het veld "Email" in.
 
@@ -86,7 +86,7 @@ Na het uitvoeren van de database migratie, kunt u het project opnieuw compileren
 
 - #### Klik op de knop "Login" om in te loggen met uw gebruikersgegevens.
 
-- #### Als u wilt inloggen als gast, klikt u op de knop "Login as Guest". Hierdoor kunt u de applicatie gebruiken zonder in te loggen met een gebruikersaccount. Houd er echter rekening mee dat sommige functies mogelijk niet beschikbaar zijn voor gastgebruikers.
+- #### Als u niet wilt inloggen kunt u de applicatie blijven bekijken als gast, hiervoor hoeft u niks te doen. Hierdoor kunt u de applicatie gebruiken zonder in te loggen met een gebruikersaccount. Houd er echter rekening mee dat sommige functies mogelijk niet beschikbaar zijn voor gastgebruikers.
 
 ### Navigatie
 
