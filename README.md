@@ -15,8 +15,7 @@ Inhoudsopgave
     - <a href="#items-zoeken" target="_new">Items zoeken</a>
     - <a href="#items-beheren" target="_new">Items beheren</a>
     - <a href="#leningen-beheren" target="_new">Leningen beheren</a>
-    - <a href="#Gebruikers-beheren" target="_new">Leningen beheren</a>
-    - <a href="#Reserveringen-beheren" target="_new">Leningen beheren</a>
+    - <a href="#Reserveringen-beheren" target="_new">Reserveringen beheren</a>
     - <a href="#gebruikeraccounts-beheren" target="_new">Gebruikeraccounts beheren</a>
 - <a href="#screenshots" target="_new">screenshots</a>    
 - <a href="#aanvullende-opmerkingen" target="_new">Aanvullende opmerkingen</a>
