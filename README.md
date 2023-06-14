@@ -112,7 +112,6 @@ Na het uitvoeren van de database migratie, kunt u het project opnieuw compileren
 - Klik op 'Bewerken' om de gegevens van een item bij te werken en klik op 'Opslaan'.
 - Klik op 'Verwijderen' om een item uit de lijst te verwijderen.
 
-**Tik als je klaar bent op de "Refresh" knop op het beginscherm om je wijzigingen te zien.**
 
 ### Leningen beheren
 
@@ -140,10 +139,10 @@ Na het uitvoeren van de database migratie, kunt u het project opnieuw compileren
 - Klik op 'Bewerken' om de gegevens van een gebruiker bij te werken zoals de betalingsstand en klik op 'Opslaan'.
 - Klik op 'Verwijderen' om een gebruiker uit de lijst te verwijderen.
 
-**Tik als je klaar bent op de "Refresh" knop op het beginscherm om je wijzigingen te zien.**
 
 # Screenshots
 https://gyazo.com/ea033d2435365793bf2794625b93965f
+
 https://gyazo.com/921f51f066f88ac326e27c5ab8af13b1
 
 # Aanvullende opmerkingen
