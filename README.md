@@ -91,12 +91,14 @@ Na het uitvoeren van de database migratie, kunt u het project opnieuw compileren
 
 ### Navigatie
 
-- #### Zoek / Filter Optie: Alle items opzoeken op titel of auteur in de zoekbalk, daarnaast de mogelijkheid om te kunnen filteren op itemtype.
+- #### Zoek / Filter Optie: Alle items opzoeken op titel of auteur in de zoekbalk, daarnaast de mogelijkheid om te kunnen filteren op itemtype, locatie, uitgavejaar etc.
 - #### Items: Beheer alle items in de bibliotheek, zoals boeken, cd's, dvd's, Blu-rays en games.
 
-- #### Auteurs: Beheer de auteurs van items in de bibliotheek.
+- #### Reserveringen: Beheer de reserveringen van items in de bibliotheek.
 
-- #### Gebruikers: Beheer de accounts van bibliotheekbeheerders en medewerkers.
+- #### Leningen: Beheer de Leningen van items in de bibliotheek.
+
+- #### Gebruikers: Beheer de accounts van bibliotheekbeheerders, gebruikers en medewerkers.
 
 ### Items Zoeken
 
