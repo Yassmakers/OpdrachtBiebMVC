@@ -27,7 +27,7 @@ Inhoudsopgave
 - Kloon de Git-repository of download en pak het zip-bestand uit.
 - Open het project in Visual Studio.
 - Controleer of de juiste NuGet-pakketten zijn geïnstalleerd.
-- Update de database commando: "dotnet ef database update"
+- Update de database commando: "update-database"
 - Compileer en voer het project uit --> (bekijk eerst ##Inloggegevens).
 
 
@@ -66,11 +66,11 @@ Voordat u de applicatie uitvoert, mocht de applicatie niet werken omdat u nog ge
 - Open de NuGet Package Manager Console via Tools > NuGet Package Manager > Package Manager Console.
 - Voer het volgende commando uit:
 
-       dotnet ef migrations add <migration-name>
+       Add-migration <migration-name>
 
   Voer daarna dit commando uit:
 
-      dotnet ef database update
+      Update-Database
 
 
 Na het uitvoeren van de database migratie, kunt u het project opnieuw compileren en uitvoeren.
