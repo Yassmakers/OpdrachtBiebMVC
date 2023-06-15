@@ -12,6 +12,7 @@
 
 
 
+
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authentication
 
@@ -53,7 +54,6 @@
         {
             <div class="text-center">
                 <h1 class="display-4">Welcome <span id="username">@User.Identity.Name</span></h1>
-                <p>Wanna be a librarian visit <a href="https://docs.microsoft.com/aspnet/core">open jobs library Almere</a>.</p>
             </div>
             @if (TempData["Message"] != null)
             {
@@ -88,8 +88,8 @@
     {
         <div class="text-center">
             <h1 class="display-4">Welcome, please log in</h1>
-            <p> 
-                <a href="@Url.Action("Login", "Home")">Login</a> or go to a librarian to open a account
+            <p>
+                <a href="@Url.Action("Login", "Home")" class="btn btn-primary">Login</a> or go to a librarian to open an account.
             </p>
         </div>
     }
@@ -110,17 +110,16 @@
             <a class="dropdown-item" href="@Url.Action("Index", "Home", new { filter = "DVD" })">DVD</a>
             <!-- Add more options for other item types -->
         </div>
-        <form method="get" action="@Url.Action("Index", "Home")" class="ml-3">
-            <div class="input-group mb-3">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Filter by year:</span>
-                </div>
-                <input type="text" class="form-control font-weight-bold" placeholder="Enter years" name="yearFilter" value="@ViewData["yearFilter"]">
+       <form method="get" action="@Url.Action("Index", "Home")" class="ml-3">
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <span class="input-group-text">Filter by year:</span>
+        </div>
+                <input type="text" class="form-control font-weight-bold" placeholder="Enter years" name="yearFilter" value="@Context.Request.Query["yearFilter"]">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit">Filter</button>
-                </div>
-            </div>
-
+            <button class="btn btn-outline-secondary" type="submit">Filter</button>
+        </div>
+    </div>
 </form>
     </div>
 
@@ -168,36 +167,32 @@
                                 var hasReserved = reservation != null;
                                 var loaned = reservation?.Loans?.Any(l => l.ItemId == item.Id && l.UserId.ToString() == userId);
 
-                            <td>
-                                    @if (hasReserved)
+                                @if (hasReserved)
+                                {
+                                    if (loaned.HasValue && loaned.Value)
                                     {
-                                        if (loaned.HasValue && loaned.Value)
-                                        {
                                         <button class="btn btn-secondary btn-sm" disabled>Loaned</button>
-                                        }
-                                        else
-                                        {
-                                        <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Home")?id=@reservation.Id">Loan</a>
-                                        }
-                                    }
-                                    else if (item.Status == ItemStatus.Reserved)
-                                    {
-                                    <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
-                                    }
-                                    else if (item.Status == ItemStatus.Loaned)
-                                    {
-                                    <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
                                     }
                                     else
                                     {
-                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
+                                        <a class="btn btn-secondary btn-sm" href="@Url.Action("Loan", "Home")?id=@reservation.Id">Loan</a>
                                     }
-                            </td>
+                                }
+                                else if (item.Status == ItemStatus.Reserved)
+                                {
+                                    <button class="btn btn-primary btn-sm" disabled>Already Reserved</button>
+                                }
+                                else if (item.Status == ItemStatus.Loaned)
+                                {
+                                    <button class="btn btn-primary btn-sm" disabled>Already Loaned</button>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-primary btn-sm" href="@Url.Action("Reserve", "Home")?id=@item.Id">Reserve</a>
+                                }
                             }
-
                         </td>
                     </tr>
-                   
                 }
             </tbody>
         </table>
@@ -206,6 +201,7 @@
     {
         <p>No items found.</p>
     }
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" crossorigin="anonymous"></script>
@@ -218,7 +214,19 @@
             });
 
             $('.dropdown').on('hide.bs.dropdown', function (e) {
-                $(this).find('.dropdown-menu').first().stop(true, true).slideUp();
+                var dropdownMenu = $(this).find('.dropdown-menu').first();
+                dropdownMenu.stop(true, true).slideUp(function () {
+                    dropdownMenu.parent().removeClass('show');
+                });
+            });
+
+            // Close the dropdown menu on click outside
+            $(document).on('click', function (e) {
+                var target = e.target;
+                if (!$(target).is('.dropdown-toggle') && !$(target).parents().is('.dropdown')) {
+                    $('.dropdown').removeClass('show');
+                    $('.dropdown-menu').slideUp();
+                }
             });
 
             var rows = document.querySelectorAll('.table tbody tr');
