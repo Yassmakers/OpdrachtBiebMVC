@@ -3,7 +3,7 @@
 #### Handleiding voor de ASP.NET Core Web App Bibliotheekbeheersysteem
 #### Deze handleiding beschrijft de installatie en het gebruik van de Bibliotheekbeheersysteem-applicatie. Volg de onderstaande instructies om de applicatie op te zetten en te gebruiken.
 
-## (Bekijk ook graag de aanvullende opmerkingen voor de beoordelaars.)
+##   -- Bekijk ook graag de <a href="#aanvullende-opmerkingen" target="_new">Aanvullende opmerkingen</a> voor de beoordelaars. --
 Inhoudsopgave
 - <a href="#installatie" target="_new">Installatie</a>
 
